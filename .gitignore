@@ -3,6 +3,13 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Telegram
+*.session
+
+
+# python uv
+uv.lock
+
 # C extensions
 *.so
 
