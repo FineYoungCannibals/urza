@@ -1,0 +1,13 @@
+services:
+  api:
+    environment:
+      - TG_SESSION_FILE=${TG_SESSION_FILE}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - MYSQL_DB=${MYSQL_DB}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    networks:
+      - lab_net
+      - default
+  mysql:
+    image: mysql/mysql:latest
