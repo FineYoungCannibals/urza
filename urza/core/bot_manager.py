@@ -1,0 +1,1 @@
+# handles agent registrations (api key creation), and agent authorization, and helps guide the server on which agent type the agent is 
