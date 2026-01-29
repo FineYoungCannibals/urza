@@ -27,9 +27,10 @@ urza/
 
 
 ### Testing
-
+```
 set -a 
 source .env
 set +a 
 
 uv run tests/test_telegram.py
+```
