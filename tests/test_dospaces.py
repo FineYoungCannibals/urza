@@ -3,6 +3,7 @@ Test script for DigitalOcean Agent
 """
 import sys
 from pathlib import Path
+import random
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -24,7 +25,7 @@ def test_list_keys():
 def test_create_keys():
     print("\nCreating Spaces keys...")
     agent = DOAgent()
-    result = agent.create_spaces_keys()
+    result = agent.create_spaces_keys(f'thopter{str(int(random.random()))}')
     print(f"Create result: {result}")
 
 def test_revoke_keys():
