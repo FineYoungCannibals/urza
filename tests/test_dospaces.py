@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
     test_connection()
     test_list_keys()
-    # test_create_keys()
+    test_create_keys()
     # test_revoke_keys()
     
     print("\nDone!")

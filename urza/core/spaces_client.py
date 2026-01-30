@@ -48,7 +48,8 @@ class DOAgent():
             ]
         }
         with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
-            response = client.post('/spaces/keys', data=payload)
+            response = client.post('/spaces/keys', json=payload)
+            response.raise_for_status()
             print(response.json())
         return response.json()
     
