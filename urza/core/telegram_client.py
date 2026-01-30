@@ -178,28 +178,35 @@ class UrzaTGClient:
     
     # ==================== SYNC WRAPPERS ====================
     
-    def setup_sync(self):
-        """Sync: Initial setup from CLI"""
-        try:
-            asyncio.run(self.connect())
-        except KeyboardInterrupt:
-            console.print("\n[yellow]Setup cancelled[/yellow]")
-        except Exception as e:
-            console.print(f"[red]✗ Error: {e}[/red]")
-            raise
-    
-    def list_bots_sync(self):
-        """Sync: List bots from CLI"""
-        try:
-            return asyncio.run(self.list_bots())
-        except Exception as e:
-            console.print(f"[red]✗ Error: {e}[/red]")
-            return None
-    
-    def create_bot_sync(self, bot_name: str, bot_username: str):
-        """Sync: Create bot from CLI"""
-        try:
-            return asyncio.run(self.create_bot(bot_name, bot_username))
-        except Exception as e:
-            console.print(f"[red]✗ Error: {e}[/red]")
-            return None
+def setup_sync(self):
+    """Sync: Initial setup from CLI"""
+    try:
+        asyncio.run(self.connect())
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Setup cancelled[/yellow]")
+        sys.exit(0)  # Clean exit on Ctrl+C
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        raise
+
+def list_bots_sync(self):
+    """Sync: List bots from CLI"""
+    try:
+        return asyncio.run(self.list_bots())
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Operation cancelled[/yellow]")
+        return None
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        return None
+
+def create_bot_sync(self, bot_name: str, bot_username: str):
+    """Sync: Create bot from CLI"""
+    try:
+        return asyncio.run(self.create_bot(bot_name, bot_username))
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Operation cancelled[/yellow]")
+        return None
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        return None
