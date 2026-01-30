@@ -26,6 +26,17 @@ urza/
     └── display.py              # Banners, formatting
 
 
+
+### Functionality
+* Login to TG as a USER
+* Create Bots
+  - DO Token needed for creating DO Spaces Keys
+  - Creates bot through TG api, creates a bot token for your enrollment
+  - each bot gets a unique urza id and key, the urza key is used to authenticate messages from bots, the urza server processes messages from bots and checks the authentication
+ Revoke a bot's tokens
+    - resets TG token, you will have to redeploy the bot with hte new token
+    - spaces token functionality? 
+
 ### Testing
 ```
 set -a 
