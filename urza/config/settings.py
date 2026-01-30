@@ -16,6 +16,7 @@ DO_BASE_URL='https://api.digitalocean.com/v2/'
 DO_BUCKET_TOKEN=os.getenv('DO_BUCKET_TOKEN')
 DO_BUCKET_TOKEN_ID=os.getenv('DO_BUCKET_TOKEN_ID')
 DO_BUCKET_URL=os.getenv('DO_BUCKET_URL')
+DO_BUCKET_NAME=os.getenv('DO_BUCKET_NAME')
 
 
 def ensure_directories():
@@ -36,7 +37,7 @@ def check_setup():
         status['urza_do_token'] = False 
     else:
         status['urza_do_token'] = True
-    if not DO_BUCKET_TOKEN or not DO_BUCKET_TOKEN_ID or not DO_BUCKET_URL:
+    if not DO_BUCKET_TOKEN or not DO_BUCKET_TOKEN_ID or not DO_BUCKET_URL or not DO_BUCKET_NAME:
         print("DO bucket environment variables need to be set, check the .env_template and check DO BUCKET section for env vars to instantiate")
         status['urza_do_bucket_config']=False
     else:

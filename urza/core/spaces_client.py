@@ -1,4 +1,4 @@
-from urza.config.settings import DO_TOKEN, DO_BASE_URL
+from urza.config.settings import DO_TOKEN, DO_BASE_URL, DO_BUCKET_NAME
 import httpx
 import boto3
 
@@ -18,13 +18,6 @@ class DOAgent():
                 response = client.get('/spaces/keys')
                 response.raise_for_status()
                 data = response.json()
-                print(data)
-    
-    
-                response = client.get('/spaces')
-                response.raise_for_status()
-                data = response.json()
-                print(data)
                 return data
         except Exception as e:
             print(f"Error listing spaces: {str(e)}")
@@ -45,7 +38,14 @@ class DOAgent():
         '''
         @return str: do spaces keys
         '''
-        print("TODO")
+        grants = [
+            {
+                "bucket":DO_
+            }
+        ]
+        with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
+            response = client.post('/spaces/keys')
+            print(response.json())
         return
     
     
