@@ -1,4 +1,5 @@
-from cmd2 import Cmd,  with_category
+from cmd2 import Cmd
+from cmd2.decorators import with_argparser, with_category
 import click
 import cmd2
 from urza.core.telegram_client import UrzaTGClient as TGC
@@ -20,14 +21,14 @@ class UrzaShell(cmd2.Cmd):
         # Post INIT
         self.poutput(BANNER)
 
-# =============== SETUP COMMANDS =====================
-@with_category("Setup")
-def do_setup(self, _):
-    """configuring necessary settings for urza"""
-    from config.settings import setup_urza
-    # setup urza folders
-    # check env vars are ready
-    setup_urza()
-    # login to TG (to create session file)
-    self.tg_client = TGC()
-    self.tg_client.setup_sync()
+    # =============== SETUP COMMANDS =====================
+    @with_category("Setup")
+    def do_login_to_tg(self, _):
+        """configuring necessary settings for urza"""
+        from urza.config.settings import setup_urza
+        # setup urza folders
+        # check env vars are ready
+        setup_urza()
+        # login to TG (to create session file)
+        self.tg_client = TGC()
+        self.tg_client.setup_sync()

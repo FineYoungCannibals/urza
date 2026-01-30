@@ -29,7 +29,7 @@ class UrzaTGClient:
             await self.client.start()
             
             me = await self.client.get_me()
-            console.print(f"[green]✓ Connected as: {me.first_name} {me.last_name} -> @{me.username} [/green]", end='')
+            console.print(f"[green]✓ Connected as: {me.first_name} {me.last_name} -> @{me.username} [/green]\n", end='')
         
         return self.client
     
@@ -44,7 +44,7 @@ class UrzaTGClient:
         """Async: Get list of bots from BotFather"""
         await self.ensure_connected()
         
-        console.print("[cyan]Fetching bot list from BotFather...[/cyan]")
+        console.print("[cyan]Fetching bot list from BotFather...[/cyan]\n")
         
         await self.client.send_message('@BotFather', '/mybots')
         await asyncio.sleep(2)
@@ -52,13 +52,13 @@ class UrzaTGClient:
         messages = await self.client.get_messages('@BotFather', limit=1)
         
         for i, msg in enumerate(messages):
-            console.print(f"[cyan]Message :{i}[/cyan]")
-            console.print(f"Text: {msg.message}")
+            console.print(f"[cyan]Message :{i}[/cyan]\n")
+            console.print(f"Text: {msg.message}\n")
             if msg.reply_markup:
                 for row in msg.reply_markup.rows:
                     for button in row.buttons:
-                        console.print(f"Bot: {button.text}")
-                        console.print(f"Bot Data: {button.data.decode('utf-8')}")
+                        console.print(f"Bot: {button.text}\n")
+                        console.print(f"Bot Data: {button.data.decode('utf-8')}\n")
                         
             console.print()
         return messages
@@ -72,7 +72,7 @@ class UrzaTGClient:
             Tuple of (bot_username, bot_id, token) or None if failed
         """
         await self.ensure_connected()
-        console.print(f"[cyan]Creating bot: {bot_name} (@{bot_username})...[/cyan]")
+        console.print(f"[cyan]Creating bot: {bot_name} (@{bot_username})...[/cyan]\n")
         
         # Step 1a: /newbot
         await self.client.send_message('@BotFather', '/newbot')
@@ -89,9 +89,9 @@ class UrzaTGClient:
             if match:
                 wait_seconds = int(match.group(1))
                 wait_hours = wait_seconds/3600
-                console.print(f"[red]x Rate Limited! :( Wait {wait_hours:.1f} hours...[/red]")
+                console.print(f"[red]x Rate Limited! :( Wait {wait_hours:.1f} hours...[/red]\n")
             else:
-                console.print(f"[red]x Rate Limited by TG, check your @Botfather interactions to understand timeframe[/red]")
+                console.print(f"[red]x Rate Limited by TG, check your @Botfather interactions to understand timeframe[/red]\n")
             return None
 
         # You aren't rate limited, continue
@@ -106,7 +106,7 @@ class UrzaTGClient:
         # Step 4: Get response with token
         messages = await self.client.get_messages('@BotFather', limit=1)
         msg = messages[0]
-        response = msg.message  # <-- Changed from .text to .message
+        response = msg.message 
 
         # Parse token from response
         if 'Use this token' in response:
@@ -119,10 +119,10 @@ class UrzaTGClient:
                     break
             
             if token:
-                console.print(f"[green]✓ Bot created successfully![/green]")
-                console.print(f"[green]  Name: {bot_name}[/green]")
-                console.print(f"[green]  Username: @{bot_username}[/green]")
-                console.print(f"[green]  Token: {token}[/green]")
+                console.print(f"[green]✓ Bot created successfully![/green]\n")
+                console.print(f"[green]  Name: {bot_name}[/green]\n")
+                console.print(f"[green]  Username: @{bot_username}[/green]\n")
+                console.print(f"[green]  Token: {token}[/green]\n")
                 
                 # Extract bot ID from token (first part before the colon)
                 bot_id = token.split(':')[0]
@@ -130,7 +130,7 @@ class UrzaTGClient:
                 return (bot_username, bot_id, token)
     
         # If we didn't find token, show response
-        console.print(f"[red]✗ Failed to create bot[/red]")
+        console.print(f"[red]✗ Failed to create bot[/red]\n")
         console.print(f"[yellow]BotFather response:[/yellow]\n{response}\n")
         return None
     
@@ -138,7 +138,7 @@ class UrzaTGClient:
         """Async: Revoke a bot's token (useful for cleanup)"""
         await self.ensure_connected()
         
-        console.print(f"[yellow]Revoking token for @{bot_username}...[/yellow]")
+        console.print(f"[yellow]Revoking token for @{bot_username}...[/yellow]\n")
 
         # start revocation 
         await self.client.send_message('@BotFather', '/revoke')
@@ -153,19 +153,19 @@ class UrzaTGClient:
         msg = messages[0]
         print(msg.message)
         if 'Invalid bot selected' in msg.message:
-            console.print(f"[red] Bot not found [/red]")
+            console.print(f"[red] Bot not found [/red]\n")
             return False, ''
         if 'Your token was replaced with a new one' in msg.message:
             import re
             match = re.search(r'HTTP API:\n([^\s]+)$',msg.message,re.MULTILINE)
-            console.print(f"[green] Bot token was rotated. New Token: [/green]")
-            console.print(f"[yellow]{match.group(1)}[/yellow]")
+            console.print(f"[green] Bot token was rotated. New Token: [/green]\n")
+            console.print(f"[yellow]{match.group(1)}[/yellow]\n")
             return True,match.group(1)
         if 'Sorry, too many attempts.' in msg.message:
             import re
             match = re.search(r'again in (\d+) seconds', msg.message)
             wait = int(match.group(1))/3600
-            console.print(f"[red]You got throttled, wait {wait:.1f} hours.[/red]")
+            console.print(f"[red]You got throttled, wait {wait:.1f} hours.[/red]\n")
             return False,''
         else:
             return False,''
@@ -174,7 +174,7 @@ class UrzaTGClient:
         """Async: Disconnect from Telegram"""
         if self.client:
             await self.client.disconnect()
-            console.print("[yellow]Disconnected from Telegram[/yellow]")
+            console.print("[yellow]Disconnected from Telegram[/yellow]\n")
     
     # ==================== SYNC WRAPPERS ====================
     
@@ -183,7 +183,7 @@ class UrzaTGClient:
         try:
             asyncio.run(self.connect())
         except KeyboardInterrupt:
-            console.print("\n[yellow]Setup cancelled[/yellow]")
+            console.print("\n[yellow]Setup cancelled[/yellow]\n")
             sys.exit(0)  # Clean exit on Ctrl+C
         except Exception as e:
             console.print(f"[red]✗ Error: {e}[/red]")
@@ -194,7 +194,7 @@ class UrzaTGClient:
         try:
             return asyncio.run(self.list_bots())
         except KeyboardInterrupt:
-            console.print("\n[yellow]Operation cancelled[/yellow]")
+            console.print("\n[yellow]Operation cancelled[/yellow]\n")
             return None
         except Exception as e:
             console.print(f"[red]✗ Error: {e}[/red]")
@@ -205,8 +205,8 @@ class UrzaTGClient:
         try:
             return asyncio.run(self.create_bot(bot_name, bot_username))
         except KeyboardInterrupt:
-            console.print("\n[yellow]Operation cancelled[/yellow]")
+            console.print("\n[yellow]Operation cancelled[/yellow]\n")
             return None
         except Exception as e:
-            console.print(f"[red]✗ Error: {e}[/red]")
+            console.print(f"[red]✗ Error: {e}[/red]\n")
             return None
