@@ -25,13 +25,16 @@ async def test():
     print("Connecting...")
     await client.connect()
     
-    print("Creating bot")
-    result = await client.create_bot('thopter5', 'thopter5_bot')
-    if result:
-        print(result)
+    #print("Creating bot")
+    #result = await client.create_bot('thopter5', 'thopter5_bot')
+    #if result:
+    #    print(result)
 
     print("\nListing bots...")
     await client.list_bots()
+
+    print("\nRevoking bots...")
+    await client.revoke_bot_token('thopter3_bot')
     
     print("\nDisconnecting...")
     await client.disconnect()

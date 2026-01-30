@@ -139,16 +139,36 @@ class UrzaTGClient:
         await self.ensure_connected()
         
         console.print(f"[yellow]Revoking token for @{bot_username}...[/yellow]")
-        
+
+        # start revocation 
         await self.client.send_message('@BotFather', '/revoke')
         await asyncio.sleep(1)
-        
+        messages = await self.client.get_messages('@BotFather', limit=1)
+
         # BotFather will show list of bots, we send the username
         await self.client.send_message('@BotFather', f'@{bot_username}')
         await asyncio.sleep(2)
-        
         messages = await self.client.get_messages('@BotFather', limit=1)
-        console.print(f"[yellow]BotFather:[/yellow]\n{messages[0].text}\n")
+
+        msg = messages[0]
+        print(msg.message)
+        if 'Invalid bot selected' in msg.message:
+            console.print(f"[red] Bot not found [/red]")
+            return False, ''
+        if 'Your token was replaced with a new one' in msg.message:
+            import re
+            match = re.search(r'HTTP API\x3a\n([A-Za-g0-9]+)$',msg.message,re.MULTILINE)
+            console.print(f"[green] Bot token was rotated [/green]")
+            console.print(f"[yellow]{match.group(1)}[/yellow]")
+            return True,match.group(1)
+        if 'Sorry, too many attempts.' in msg.message:
+            import re
+            match = re.search(r'again in (\d+) seconds', msg.message)
+            wait = int(match.group(1))/3600
+            console.print(f"[red]You got throttled, wait {wait:.1f} hours.[/red]")
+            return False,''
+        else:
+            return False,''
     
     async def disconnect(self):
         """Async: Disconnect from Telegram"""
