@@ -25,13 +25,13 @@ def test_list_keys():
 def test_create_keys():
     print("\nCreating Spaces keys...")
     agent = DOAgent()
-    result = agent.create_spaces_keys(f'thopter{str(int(random.random()))}')
+    result = agent.create_spaces_keys(f'thopter{str(int(random.randint(0,999)))}')
     print(f"Create result: {result}")
 
-def test_revoke_keys():
+def test_revoke_keys(botname, access_key):
     print("\nRevoking Spaces keys...")
     agent = DOAgent()
-    result = agent.revoke_spaces_keys("test_key_123")
+    result = agent.revoke_spaces_keys(botname, access_key)
     print(f"Revoke result: {result}")
 
 if __name__ == '__main__':
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     
     test_connection()
     test_list_keys()
-    test_create_keys()
-    # test_revoke_keys()
+    #test_create_keys()
+    #test_revoke_keys('thopter573','DO801HCZAQ7A9RLKR6R2') #(update)
     
     print("\nDone!")

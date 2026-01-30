@@ -43,24 +43,31 @@ class DOAgent():
             "grants":[
                 {
                     "bucket":DO_BUCKET_NAME,
-                    "permission":"write"
+                    "permission":"readwrite"
                 }
             ]
         }
         with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
-            response = client.post('/spaces/keys', json=payload)
+            response = client.post('/spaces/keys', json=payload, timeout=30)
             response.raise_for_status()
             print(response.json())
         return response.json()
     
     
-    def revoke_spaces_keys(self, old_keys):
+    def revoke_spaces_keys(self, key_name,access_key):
         '''
-        Docstring for revoke_spaces_keys
+        Delete the old key, make a new one by the new name
         
         :param self: Description
         :param old_keys: Description
         :return new_keys
         '''
-        print("TODO")
-        return
+        with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
+            response = client.delete(f'/spaces/keys/{access_key}', timeout=30)
+            response.raise_for_status()
+            if int(response.status_code) == 204:
+                print('Cycling Access Key')
+            
+            data = self.create_spaces_keys(key_name)
+
+        return data
