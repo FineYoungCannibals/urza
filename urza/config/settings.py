@@ -3,11 +3,12 @@ import sys
 import os
 from pathlib import Path
 
+# Paths
 URZA_DIR = Path.home() / '.urza'
-
 SESSION_FILE = URZA_DIR / 'urza_session.session'
 CONFIG_FILE = URZA_DIR / 'config.json'
 BUILDS_DIR = URZA_DIR / 'builds'
+# Environment variables
 TG_API_ID=os.getenv('TG_API_ID','')
 TG_API_HASH=os.getenv('TG_API_HASH','')
 
@@ -43,4 +44,6 @@ def is_ready():
 
 
 def setup_urza():
+    ensure_directories()
+    is_ready()
     return 
