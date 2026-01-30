@@ -157,8 +157,8 @@ class UrzaTGClient:
             return False, ''
         if 'Your token was replaced with a new one' in msg.message:
             import re
-            match = re.search(r'HTTP API\x3a\n([A-Za-g0-9]+)$',msg.message,re.MULTILINE)
-            console.print(f"[green] Bot token was rotated [/green]")
+            match = re.search(r'HTTP API:\n([^\s]+)$',msg.message,re.MULTILINE)
+            console.print(f"[green] Bot token was rotated. New Token: [/green]")
             console.print(f"[yellow]{match.group(1)}[/yellow]")
             return True,match.group(1)
         if 'Sorry, too many attempts.' in msg.message:
