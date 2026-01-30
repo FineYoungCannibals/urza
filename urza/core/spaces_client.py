@@ -34,19 +34,23 @@ class DOAgent():
             print(response.json())
         return response.json()
     
-    def create_spaces_keys(self):
+    def create_spaces_keys(self, botname):
         '''
         @return str: do spaces keys
         '''
-        grants = [
-            {
-                "bucket":DO_
-            }
-        ]
+        payload = {
+            "name": botname,
+            "grants":[
+                {
+                    "bucket":DO_BUCKET_NAME,
+                    "permission":"write"
+                }
+            ]
+        }
         with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
-            response = client.post('/spaces/keys')
+            response = client.post('/spaces/keys', data=payload)
             print(response.json())
-        return
+        return response.json()
     
     
     def revoke_spaces_keys(self, old_keys):
