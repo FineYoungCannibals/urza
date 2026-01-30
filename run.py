@@ -3,7 +3,7 @@
 from urza.cli.shell import UrzaShell
 
 def main():
-    """Launch DigDug interactive shell"""
+    """Launch URZA interactive shell"""
     # Start shell
     app = UrzaShell()
     app.cmdloop()
