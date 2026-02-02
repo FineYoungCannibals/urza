@@ -31,7 +31,6 @@ class DOAgent():
         '''
         with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
             response = client.get('/spaces/keys')
-            print(response.json())
         return response.json()
     
     def create_spaces_keys(self, botname):
@@ -50,7 +49,6 @@ class DOAgent():
         with httpx.Client(base_url=DO_BASE_URL, headers=self.headers) as client:
             response = client.post('/spaces/keys', json=payload, timeout=30)
             response.raise_for_status()
-            print(response.json())
         return response.json()
     
     
@@ -67,7 +65,6 @@ class DOAgent():
             response.raise_for_status()
             if int(response.status_code) == 204:
                 print('Cycling Access Key')
-            
             data = self.create_spaces_keys(key_name)
 
         return data
