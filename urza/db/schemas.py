@@ -16,9 +16,13 @@ class ProofofWork(BaseModel):
     description: Optional[str] = None
     link: str
 
+
+class TaskType(str, Enum):
+    RBP="rbp"
+
 class BaseTask(BaseModel):
     task_id: str
-    task_type: Literal["rbp"]
+    task_type: TaskType
     assigned_to: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     timeout_seconds: int = 3600
@@ -27,5 +31,15 @@ class BaseTask(BaseModel):
     proof_of_work_required: Optional[bool] = False
 
 class RBPTask(BaseTask):
-    task_type: Literal["rbp"] = "rbp"
+    task_type: Literal[TaskType.RBP] = TaskType.RBP
     yaml_config: str
+
+class Platform(str,Enum):
+    mac = "mac"
+    win = "win"
+    ubu = "ubu"
+
+class Bot(BaseModel):
+    name: str
+    platform: Platform
+    capabilities: list[TaskType]
