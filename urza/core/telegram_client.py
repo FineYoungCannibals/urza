@@ -1,7 +1,9 @@
 # /server/src/utils/telegram_client.py
-from urza.config.settings import SESSION_FILE, TG_API_HASH, TG_API_ID
+from urza.config.settings import SESSION_FILE, TG_API_HASH, TG_API_ID, TG_CHANNEL_ID
 from pathlib import Path
 from telethon import TelegramClient
+from telethon.tl.functions.channels import EditAdminRequest, EditBannedRequest
+from telethon.tl.types import ChatAdminRights, ChatBannedRights
 import asyncio
 import logging
 from rich.console import Console
@@ -39,6 +41,33 @@ class UrzaTGClient:
             await self.connect()
     
     # ==================== BOT OPERATIONS ====================
+    async def delete_bot(self, bot_username):
+        """Async: Delete a bot via BotFather"""
+        import re
+
+        await self.ensure_connected()
+
+        await self.client.send_message('@BotFather', '/deletebot')
+
+        await asyncio.sleep(3)
+
+        await self.client.send_message('@BotFather',f'@{bot_username}')
+
+        messages = await self.client.get_messages('@BotFather', limit=1)
+        msg = messages[0]
+        await asyncio.sleep(3)
+
+        if f'OK, you selected @{bot_username}. Are you sure?' in msg.message:
+            match = re.search(r"Send '(?P<confirmation>[^\']+?)'", msg.message, re.MULTILINE)
+            await asyncio.sleep(3)
+            if match:
+                print(match.group('confirmation'))
+                await self.client.send_message('@BotFather',f'{match.group('confirmation')}')
+                return True
+            else:
+                print('error')
+                return False
+
     
     async def list_bots(self):
         """Async: Get list of bots from BotFather"""
@@ -106,33 +135,34 @@ class UrzaTGClient:
         # Step 4: Get response with token
         messages = await self.client.get_messages('@BotFather', limit=1)
         msg = messages[0]
-        response = msg.message 
+        response = msg.message
+
 
         # Parse token from response
         if 'Use this token' in response:
-            lines = response.split('\n')
-            token = None
-            for line in lines:
-                # Look for the token line (format: 1234567890:ABCdef...)
-                if line.strip() and ':' in line and 'AAH' in line:
-                    token = line.strip()
-                    break
-            
-            if token:
+            import re
+            match = re.search(r'Use this token to access the HTTP API:\s(?P<token>(?P<id>\d+):(?P<authkey>[^\s]+?))\s', response, re.MULTILINE)
+            if match:
                 console.print(f"[green]✓ Bot created successfully![/green]\n")
-                console.print(f"[green]  Name: {bot_name}[/green]\n")
+                console.print(f"[green]  Name: {bot_name} ID: {match.group('id')}[/green]\n")
                 console.print(f"[green]  Username: @{bot_username}[/green]\n")
-                console.print(f"[green]  Token: {token}[/green]\n")
-                
+                console.print(f"[green]  Token: {match.group('token')}[/green]\n")
+                return (bot_username, match.group('id'), match.group('token'))
+            
+            else:
+                console.print(f"[green]✓ Bot created successfully![/green]\n")
+                console.print(f"[yellow] Error parsing token from response.[/yellow]\n")
+                console.print(f"[green] Username: @{bot_username}[/green]\n")
+                console.print(f"[yellow] ID Not Parsed\n[/yellow]")
+                console.print(f"[yellow] Token Not Parsed[/yellow]")
+                return (bot_username, '','') 
                 # Extract bot ID from token (first part before the colon)
-                bot_id = token.split(':')[0]
                 
-                return (bot_username, bot_id, token)
     
         # If we didn't find token, show response
         console.print(f"[red]✗ Failed to create bot[/red]\n")
         console.print(f"[yellow]BotFather response:[/yellow]\n{response}\n")
-        return None
+        return (None,None,None)
     
     async def revoke_bot_token(self, bot_username: str):
         """Async: Revoke a bot's token (useful for cleanup)"""
@@ -175,7 +205,53 @@ class UrzaTGClient:
         if self.client:
             await self.client.disconnect()
             console.print("[yellow]Disconnected from Telegram[/yellow]\n")
-    
+    # ==================== CHANNEL OPERATIONS ===============
+
+    async def ban_from_channel(self, bot_username):
+        channel = await self.client.get_entity(TG_CHANNEL_ID)
+        bot = await self.client.get_entity(bot_username)
+
+        await self.client(EditBannedRequest(
+            channel=channel,
+            participant=bot,
+            banned_rights=ChatBannedRights(
+                until_date=None, # Permaban lawl
+                view_messages=True
+            )
+        ))
+        console.print(f"[green]Removed bot {bot_username} from channel.[/green]")
+        return True
+
+    async def add_bot_to_channel(self,bot_username):
+        channel = await self.client.get_entity(int(TG_CHANNEL_ID))
+
+        bot = await self.client.get_entity(bot_username)
+
+        admin_rights = ChatAdminRights(
+            post_messages=True,
+            edit_messages=False,
+            delete_messages=False,
+            ban_users=False,
+            invite_users=False,
+            pin_messages=False,
+            anonymous=False,
+            manage_topics=False,
+            post_stories=False,
+            edit_stories=False,
+            delete_stories=False
+        )
+
+        await self.client(EditAdminRequest(
+            channel=channel,
+            user_id=bot,
+            admin_rights=admin_rights,
+            rank='Bot'
+        ))
+
+        print(f"Added {bot_username} as limited admin to channel.")
+        return True
+
+     
     # ==================== SYNC WRAPPERS ====================
     
     def setup_sync(self):
@@ -184,10 +260,9 @@ class UrzaTGClient:
             asyncio.run(self.connect())
         except KeyboardInterrupt:
             console.print("\n[yellow]Setup cancelled[/yellow]\n")
-            sys.exit(0)  # Clean exit on Ctrl+C
         except Exception as e:
             console.print(f"[red]✗ Error: {e}[/red]")
-            raise
+
     
     def list_bots_sync(self):
         """Sync: List bots from CLI"""
