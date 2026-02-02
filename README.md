@@ -36,6 +36,21 @@ urza/
  Revoke a bot's tokens
     - resets TG token, you will have to redeploy the bot with hte new token
     - spaces token functionality? 
+* Urza is dumb to downstream processing tasks on proof of work
+     - if you want downstream processing, automation should be written to monitor a specific folder in your s3 bucket to process the files that drop there
+     - Urza is only going to mark tasks as complete in it's own data store
+
+### ENV VAR REQUIREMENTS 
+
+**how do i find my channel id?**
+```
+The easiest way:
+
+Just send your invite link to your private channel to @username_to_id_bot (https://t.me/username_to_id_bot) bot. It will return its ID. The simplest level: maximum! :)
+
+PS. I am not an owner of this bot.
+
+PS 2. the Bot will not join your group, but to be sure in security. Just revoke your old invitation link if it is matter for you after bot using.
 
 ### Testing
 ```
