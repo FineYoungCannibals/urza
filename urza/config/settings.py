@@ -8,9 +8,11 @@ URZA_DIR = Path.home() / '.urza'
 SESSION_FILE = URZA_DIR / 'urza_session.session'
 CONFIG_FILE = URZA_DIR / 'config.json'
 BUILDS_DIR = URZA_DIR / 'builds'
-# Environment variables
+# TG Specific
 TG_API_ID=os.getenv('TG_API_ID','')
 TG_API_HASH=os.getenv('TG_API_HASH','')
+TG_CHANNEL_ID=int(os.getenv('TG_CHANNEL_ID','0'))
+# DO Specific
 DO_TOKEN=os.getenv('DO_TOKEN','')
 DO_BASE_URL='https://api.digitalocean.com/v2/'
 DO_BUCKET_TOKEN=os.getenv('DO_BUCKET_TOKEN')
