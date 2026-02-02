@@ -3,6 +3,7 @@ import asyncio
 import sys
 from pathlib import Path
 import os
+import random
 
 
 # Add to path
@@ -25,16 +26,28 @@ async def test():
     print("Connecting...")
     await client.connect()
     
+    #newbot = 'thopter'+str(random.randint(100,1000000))
+    #botname = newbot+'_bot'
     #print("Creating bot")
-    #result = await client.create_bot('thopter5', 'thopter5_bot')
+    #result = await client.create_bot(newbot, botname)
     #if result:
     #    print(result)
 
     print("\nListing bots...")
     await client.list_bots()
 
-    print("\nRevoking bots...")
-    await client.revoke_bot_token('thopter3_bot')
+
+    #print("\nPermabanning a bot")
+    #await client.ban_from_channel(bot_username='thopter374296_bot')
+
+    print("Deleting bot")
+    await client.delete_bot(bot_username='thopter374296_bot')
+
+    #print(f"Adding {botname} bot to channel")
+    #await client.add_bot_to_channel(bot_username='@'+botname)
+
+    #print("\nRevoking bots...")
+    #await client.revoke_bot_token('thopter3_bot')
     
     print("\nDisconnecting...")
     await client.disconnect()
