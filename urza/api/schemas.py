@@ -4,49 +4,84 @@ Pydantic schemas for API request/response validation
 from pydantic import BaseModel, Field
 from typing import Optional, List
 from datetime import datetime
+from urza.db.schemas import Capability, Platform
 
 
-# ==================== BOT SCHEMAS ====================
-
+# Client requests
 class BotCreateRequest(BaseModel):
     """Request to create a new bot"""
-    platform: str = Field(..., description="Target platform: windows, macos, linux")
-    name: Optional[str] = Field(None, description="Bot display name")
-    capabilities: Optional[List[str]] = Field(None, description="Bot capabilities")
+    capabilities: list[str]
+    platform: str
+
+class BotDeleteRequest(BaseModel):
+    """Request to delete a bot"""
+    username: Optional[str]
+    bot_id: Optional[str]
+
+class TaskCreateRequest(BaseModel):
+    """Request to create a new task"""
+    config: dict
+    required_capability: str
+    proof_of_work_required: Optional[bool]
+    platform_type: Optional[str]
+
+class CapabilityCreateRequest(BaseModel):
+    """
+    Docstring for CapabilityCreateRequest
+    """
+    name: str
+    version: str
+    description: str
+
+class CapabilityDeleteRequest(BaseModel):
+    """
+    Docstring for CapabilityDeleteRequest
+    """
+    name: Optional[str]
+    id: Optional[str]
+    version: Optional[str]
+
+class CapabilityRequest(BaseModel):
+    """
+    Docstring for CapabilityRequest
+    """
+    capabilities: List[Capability]
+
+
+class  PlatformCreateRequest(BaseModel):
+    """
+    Docstring for PlatformCreateRequest
+    """
+    name: str
+    description: str
+    os_major_version: str
+
+
+class BotProvisionResponse(BaseModel):
+    bot_id: str
+    username: str
+    s3_access_key: str
+    s3_auth_key: str
+    tg_bot_token: str
 
 
 class BotResponse(BaseModel):
     """Bot information response"""
     bot_id: str
     username: str
-    token: str
-    platform: str
-    spaces_key_id: Optional[str] = None
-    status: str
+    urza_auth_token: str
+    platform: Platform
+    capabilities: list[Capability]
+    s3_access_key: str
+    s3_auth_key: str
+    tg_bot_token: str
     created_at: datetime
     last_checkin: Optional[datetime] = None
-
 
 class BotListResponse(BaseModel):
     """List of bots response"""
     bots: List[BotResponse]
     total: int
-
-
-class BotDeleteRequest(BaseModel):
-    """Request to delete a bot"""
-    revoke_token: bool = Field(True, description="Also revoke token in Telegram")
-
-
-# ==================== TASK SCHEMAS ====================
-
-class TaskCreateRequest(BaseModel):
-    """Request to create a new task"""
-    task_type: str = Field(..., description="Task type: single_bot, all_bots, update_framework")
-    target: Optional[str] = Field(None, description="Target for task (IP, domain, etc)")
-    assigned_bot_id: Optional[str] = Field(None, description="Specific bot to assign (for single_bot)")
-    data: Optional[dict] = Field(None, description="Additional task data")
-
 
 class TaskResponse(BaseModel):
     """Task information response"""
@@ -65,17 +100,6 @@ class TaskListResponse(BaseModel):
     tasks: List[TaskResponse]
     total: int
 
-
-# ==================== FRAMEWORK UPDATE SCHEMAS ====================
-
-class ModuleUpdateRequest(BaseModel):
-    """Request to update a framework on bots"""
-    framework_name: str = Field(..., description="Framework name (e.g., 'rbp')")
-    version: str = Field(..., description="Version to update to")
-    target_bots: Optional[List[str]] = Field(None, description="Specific bots to update (None = all)")
-
-
-# ==================== HEALTH/STATUS SCHEMAS ====================
 
 class HealthResponse(BaseModel):
     """Health check response"""
