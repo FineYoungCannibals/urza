@@ -64,13 +64,13 @@ services:
     ports:
       - "${API_PORT:-8000}:8000"
     volumes:
-      - ./server/src:/app/server/src
+      - /srv/docker/urza/urza_session.session:/root/.urza/urza_session.session
       - urza_data:/root/.urza
     networks:
       - dev_lab
     command: >
       sh -c "
-        python -m db.init_db &&
+        python -m urza.db.init_db &&
         uvicorn app:app --host 0.0.0.0 --port 8000 --reload
       "
 
