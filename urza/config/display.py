@@ -1,6 +1,10 @@
+from urza.config.settings import BOT
+
+APP_VERSION="0.1.0"
+
 SHELL_PROMPT="urza >"
 
-BANNER = """
+BANNER = f"""
 ╔═══════════════════════════════════╗
 ║  ██╗   ██╗██████╗ ███████╗ █████╗ ║
 ║  ██║   ██║██╔══██╗╚══███╔╝██╔══██╗║
@@ -8,13 +12,17 @@ BANNER = """
 ║  ██║   ██║██╔══██╗ ███╔╝  ██╔══██║║
 ║  ╚██████╔╝██║  ██║███████╗██║  ██║║
 ║   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝║
-║                                   ║
-║ [ Recon Orchestration System ]    ║
+║           {APP_VERSION}           ║
+║  [ {BOT} Orchestration System ]   ║
 ╚═══════════════════════════════════╝
 """
 
+APP_DESC="""
+A telegram based bot orchestration system
+"""
 
-API_WELCOME="""
+
+APP_WELCOME="""
 _____
                         .-'     '-.
                        /           \
