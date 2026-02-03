@@ -2,7 +2,13 @@
 import sys
 import os
 from pathlib import Path
+import logging
+from pydantic_settings import BaseSettings
+from pydantic import field_validator
 
+
+# BOTNAME
+BOT = os.getenv('BOT_NAME','thopter')
 # Paths
 URZA_DIR = Path.home() / '.urza'
 SESSION_FILE = URZA_DIR / 'urza_session.session'
@@ -19,7 +25,59 @@ DO_BUCKET_TOKEN=os.getenv('DO_BUCKET_TOKEN')
 DO_BUCKET_TOKEN_ID=os.getenv('DO_BUCKET_TOKEN_ID')
 DO_BUCKET_URL=os.getenv('DO_BUCKET_URL')
 DO_BUCKET_NAME=os.getenv('DO_BUCKET_NAME')
+# Database specific
+MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
+MYSQL_PORT = int(os.getenv('MYSQL_PORT', '3306'))
+MYSQL_USER = os.getenv('MYSQL_USER', 'urza')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
+MYSQL_NAME = os.getenv('MYSQL_DB', 'urza_db')
 
+# === == === == = == == = = == = = == == = == === === ====
+
+class Settings(BaseSettings):
+    log_level: str = 'INFO'
+    api_host: str = "0.0.0.0"
+    api_port: int = 8000
+
+    @field_validator('log_level')
+    @classmethod
+    def get_log_level(cls, v:str) -> str:
+        """ validate log level """
+        valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        level_upper = v.upper()
+        if level_upper in valid_levels:
+            return level_upper
+        else:
+            print(f"WARNING: Invalid log level '{v}, defaulting to INFO")
+            return 'INFO'
+        
+    class Config:
+        env_file = ".env"
+        case_sensitive = False
+
+# create settings instance
+settings = Settings()
+
+def setup_logging():
+    """
+    Configure logging globally.
+    Call once at application startup.
+    """
+    logging.basicConfig(
+        level=getattr(logging, settings.log_level),
+        format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S',
+        force=True  # Reconfigure if already configured
+    )
+    
+    # Quiet noisy third-party loggers
+    logging.getLogger("uvicorn").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+   
+    # Return a logger for the application
+    logger = logging.getLogger("urza")  # Fixed name!
+    logger.info(f"Logging configured at {settings.log_level} level")
+    return logger
 
 def ensure_directories():
     URZA_DIR.mkdir(parents=True, exist_ok=True)
