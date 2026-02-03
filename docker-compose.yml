@@ -64,8 +64,7 @@ services:
     ports:
       - "${API_PORT:-8000}:8000"
     volumes:
-      - /srv/docker/urza/urza_session.session:/root/.urza/urza_session.session
-      - urza_data:/root/.urza
+      - /srv/docker/urza/:/root/.urza/
     networks:
       - dev_lab
     command: >
