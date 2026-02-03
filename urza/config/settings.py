@@ -12,8 +12,7 @@ BOT = os.getenv('BOT_NAME','thopter')
 # Paths
 URZA_DIR = Path.home() / '.urza'
 SESSION_FILE = URZA_DIR / 'urza_session.session'
-CONFIG_FILE = URZA_DIR / 'config.json'
-BUILDS_DIR = URZA_DIR / 'builds'
+
 # TG Specific
 TG_API_ID=os.getenv('TG_API_ID','')
 TG_API_HASH=os.getenv('TG_API_HASH','')
@@ -80,8 +79,6 @@ def setup_logging():
 
 def ensure_directories():
     URZA_DIR.mkdir(parents=True, exist_ok=True)
-    BUILDS_DIR.mkdir(exist_ok=True)
-
 
 def check_setup():
     """Check if session file for TG has been configured """
