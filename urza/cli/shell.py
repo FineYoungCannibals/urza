@@ -3,7 +3,6 @@ from cmd2.decorators import with_argparser, with_category
 import click
 import cmd2
 from urza.core.telegram_client import UrzaTGClient as TGC
-
 from urza.config.display import SHELL_PROMPT, BANNER
 import logging
 from rich.console import Console
