@@ -1,7 +1,5 @@
 # /docker-compose.yml
 
-version: '3.8'
-
 services:
   # MySQL Database
   mysql:
@@ -41,7 +39,6 @@ services:
       mysql:
         condition: service_healthy
     environment:
-      # Logging
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       
       # API Settings
