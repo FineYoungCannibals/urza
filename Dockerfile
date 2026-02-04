@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install uv (binary installation only)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+# Set working directory
+WORKDIR /app
+
 # Urza user creation
 RUN groupadd -g 1000 urza && \
     useradd -u 1000 -g urza -m -s /bin/bash urza
@@ -20,8 +23,6 @@ RUN groupadd -g 1000 urza && \
 RUN chown -R root:1000 /app && \
     chmod 770 /app
 
-# Set working directory
-WORKDIR /app
 
 # Copy project files
 COPY --chown=urza:urza pyproject.toml uv.lock* ./
