@@ -6,12 +6,8 @@ import logging
 from pydantic_settings import BaseSettings
 from pydantic import field_validator
 
-
 # BOTNAME
 BOT = os.getenv('BOT_NAME','thopter')
-# Paths
-URZA_DIR = Path.home() / '.urza'
-SESSION_FILE = URZA_DIR / 'urza_session.session'
 
 # TG Specific
 TG_API_ID=os.getenv('TG_API_ID','')
@@ -30,12 +26,38 @@ MYSQL_PORT = int(os.getenv('MYSQL_PORT', '3306'))
 MYSQL_USER = os.getenv('MYSQL_USER', 'urza')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
 MYSQL_DB = os.getenv('MYSQL_DB', 'urza_db')
-# === == === == = == == = = == = = == == = == === === ====
 
 class Settings(BaseSettings):
+    # API Settings
     log_level: str = 'INFO'
     api_host: str = "0.0.0.0"
     api_port: int = 8000
+
+    # bot
+    bot_name: str = 'thopter'
+
+    # Telegram
+    tg_api_id: str = ''
+    tg_api_hash: str = ''
+    tg_channel_id: str = ''
+    tg_controller_bot_token: str = ''
+
+    # DO settings
+    do_token: str = ''
+    do_bucket_token: str | None = None
+    do_bucket_token_id: str | None = None
+    do_bucket_url: str | None = None
+    do_bucket_name: str | None = None
+
+
+    # MySQL
+    mysql_host: str = 'localhost'
+    mysql_port: int = 3306
+    mysql_user: str = 'urza'
+    mysql_password: str = ''
+    mysql_db: str = 'urza_db'
+    mysql_root_password: str = 'changemeplease'
+    
 
     @field_validator('log_level')
     @classmethod
@@ -76,41 +98,3 @@ def setup_logging():
     logger = logging.getLogger("urza")  # Fixed name!
     logger.info(f"Logging configured at {settings.log_level} level")
     return logger
-
-def ensure_directories():
-    URZA_DIR.mkdir(parents=True, exist_ok=True)
-
-def check_setup():
-    """Check if session file for TG has been configured """
-    status = {}
-    if not SESSION_FILE.exists():
-        print("Urza must be run from the cli.py component to register a user session.")
-        status['urza_session'] = False
-    else:
-        status['urza_session'] = True
-    if not os.getenv('DO_TOKEN'):
-        print("DO_TOKEN environment variable must be set in the Urza docker container.")
-        status['urza_do_token'] = False 
-    else:
-        status['urza_do_token'] = True
-    if not DO_BUCKET_TOKEN or not DO_BUCKET_TOKEN_ID or not DO_BUCKET_URL or not DO_BUCKET_NAME:
-        print("DO bucket environment variables need to be set, check the .env_template and check DO BUCKET section for env vars to instantiate")
-        status['urza_do_bucket_config']=False
-    else:
-        status['urza_do_bucket_config'] = True
-    if not os.getenv('TG_CONTROLLER_BOT_TOKEN'):
-        print('TG_CONTROLLER_BOT_TOKEN environment variable must be set in the Urza docker container.')
-        status['urza_tg_controller_bot_token'] = False
-    else:
-        status['urza_tg_controller_bot_token'] = True
-    return status
-
-
-def is_ready():
-    return all(check_setup().values())
-
-
-def setup_urza():
-    ensure_directories()
-    is_ready()
-    return 
