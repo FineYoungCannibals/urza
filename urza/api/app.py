@@ -1,13 +1,13 @@
-# server.py
+# urza/api/app.py
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 from urza.config.display import BANNER, APP_WELCOME, APP_DESC, APP_VERSION
-from config.settings import is_ready, setup_logging, setup_urza, settings
+from config.settings import setup_logging, settings
+from config.startup import check_setup, setup_urza
+from contextlib import asynccontextmanager
 import logging
-
-setup_logging()
 
 logger = logging.getLogger(__name__)
 app = FastAPI(
@@ -15,6 +15,17 @@ app = FastAPI(
     description=APP_DESC,
     version="0.1.0"
 )
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger = setup_logging()
+    logger.info(f"Starting Urza API on {settings.api_host}:{settings.api_port}")
+    if not check_setup():
+        setup_urza()
+
+    yield
+
+    logger.info("Shutting down Urza")
 
 # explicit route declaration 
 from routes import bots
@@ -39,7 +50,6 @@ def root():
 
 if __name__=="__main__":
     import uvicorn
-    logger.info(f"Starting Urza API on {settings.api_host}:{settings.api_port}")
     uvicorn.run(
         "app:app",
         host=settings.api_host,
