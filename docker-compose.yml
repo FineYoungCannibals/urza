@@ -64,7 +64,6 @@ services:
       - "${API_PORT:-8000}:8000"
     volumes:
       - ${DATA_DIR}:/app/.urza/
-      # - /srv/docker/urza/:/app/.urza/
     networks:
       - dev_lab
     command: >
