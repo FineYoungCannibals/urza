@@ -17,6 +17,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 RUN groupadd -g 1000 urza && \
     useradd -u 1000 -g urza -m -s /bin/bash urza
 
+RUN chown -R root:1000 && \
+    chmod 770 /app
+
 # Set working directory
 WORKDIR /app
 
