@@ -60,3 +60,10 @@ set +a
 
 uv run tests/test_telegram.py
 ```
+
+
+### Docker 
+
+```
+docker network create --driver bridge dev_lab
+```
