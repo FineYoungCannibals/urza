@@ -10,24 +10,30 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# Install uv (binary installation only)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# ENV Path
-ENV PATH="/root/.local/bin:$PATH"
-SHELL ["/bin/bash", "-c"]
+# Urza user creation
+RUN groupadd -g 1000 urza && \
+    useradd -u 1000 -g urza -m -s /bin/bash urza
 
 # Set working directory
 WORKDIR /app
 
 # Copy project files
-COPY pyproject.toml uv.lock* ./
+COPY --chown=urza:urza pyproject.toml uv.lock* ./
+
+# Sync as user urza
+USER urza
+
+# Copy project files
 RUN uv sync --frozen --no-dev
 
 # Copy application code
-COPY . .
+COPY --chown=urza:urza . .
 
 # Set Python path so imports work
+ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONPATH=/app
 
 # Default command - run API server
