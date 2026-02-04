@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # Paths
-URZA_DIR = Path.home() / '.urza'
+URZA_DIR = Path('/app') / '.urza'
 SESSION_FILE = URZA_DIR / 'urza_session.session'
 
 def ensure_directories():
