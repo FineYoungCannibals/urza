@@ -20,11 +20,19 @@ app = FastAPI(
 async def lifespan(app: FastAPI):
     logger = setup_logging()
     logger.info(f"Starting Urza API on {settings.api_host}:{settings.api_port}")
+    # Does the session file exist?
     if not check_setup():
         setup_urza()
+    # Is Telegram Connected? 
+    
+    # Can we connect to DO?
+    
+    # Check we can connect to the database
 
+    # Yield for the app
     yield
 
+    # Shutting down the app
     logger.info("Shutting down Urza")
 
 # explicit route declaration 
@@ -36,7 +44,8 @@ app.include_router(bots.router, prefix="/bots", tags=["bots"])
 async def health_check():
     resp_dict = {"status":"healthy", "service":"urza-api"}
     # check db connectivity
-    # check tg connectivity
+    # check tg authentication status
+    # check tg channel connectivity
     # check do spaces connectivity
     return resp_dict
 
