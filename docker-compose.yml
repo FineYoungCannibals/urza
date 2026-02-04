@@ -14,7 +14,6 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./server/src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     networks:
       - dev_lab
     healthcheck:
@@ -64,7 +63,8 @@ services:
     ports:
       - "${API_PORT:-8000}:8000"
     volumes:
-      - /srv/docker/urza/:/app/.urza/
+      - ${DATA_DIR}:/app/.urza/
+      # - /srv/docker/urza/:/app/.urza/
     networks:
       - dev_lab
     command: >
