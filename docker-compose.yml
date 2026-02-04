@@ -68,10 +68,12 @@ services:
     networks:
       - dev_lab
     command: >
-      sh -c "
-        uv run python -m urza.db.init_db &&
-        uv run uvicorn urza.api.app:app --host 0.0.0.0 --port 8000 --reload
-      "
+      tail -f /dev/null
+    #command: >
+    #  bash -c "
+    #    uv run python -m urza.db.init_db &&
+    #    uv run uvicorn urza.api.app:app --host 0.0.0.0 --port 8000 --reload
+    #  "
 
 volumes:
   mysql_data:
