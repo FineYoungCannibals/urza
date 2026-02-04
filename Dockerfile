@@ -3,28 +3,25 @@
 FROM python:3.13-slim-bookworm
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    libmariadb-dev \
     gcc \
-    musl-dev \
-    linux-headers \
-    libffi-dev \
-    openssl-dev \
-    mariadb-dev \
-    mariadb-connector-c
+    && rm -rf /var/lib/apt/lists/*
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # ENV Path
-ENV PATH="/root/.cargo/bin:$PATH"
+ENV PATH="/root/.local/bin:$PATH"
+SHELL ["/bin/bash", "-c"]
 
 # Set working directory
 WORKDIR /app
 
 # Copy project files
 COPY pyproject.toml uv.lock* ./
-
-# Install dependencies with uv
 RUN uv sync --frozen --no-dev
 
 # Copy application code
