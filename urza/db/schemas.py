@@ -154,7 +154,6 @@ class Bot(BaseModel):
 class BotCreateRequest(BaseModel):
     platform_id: str
     capabilities: list[str]
-    is_hidden: bool = False
 
 class BotCreateResponse(BaseModel):
     bot_id: str
