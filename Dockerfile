@@ -1,6 +1,6 @@
 # /Dockerfile
 
-FROM python:3.13-slim
+FROM python:3.13-slim-bookworm
 
 # Install system dependencies
 RUN apk add --no-cache \
