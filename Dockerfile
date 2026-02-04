@@ -1,6 +1,6 @@
 # /Dockerfile
 
-FROM python:3.13-alpine
+FROM python:3.13-slim
 
 # Install system dependencies
 RUN apk add --no-cache \
@@ -15,6 +15,7 @@ RUN apk add --no-cache \
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
+# ENV Path
 ENV PATH="/root/.cargo/bin:$PATH"
 
 # Set working directory
