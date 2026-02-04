@@ -69,8 +69,8 @@ services:
       - dev_lab
     command: >
       sh -c "
-        python -m urza.db.init_db &&
-        uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+        uv run python -m urza.db.init_db &&
+        uv run uvicorn urza.api.app:app --host 0.0.0.0 --port 8000 --reload
       "
 
 volumes:
