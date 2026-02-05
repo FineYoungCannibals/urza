@@ -1,0 +1,6 @@
+# /docker-compose.yml
+
+services:
+  urza_api:
+    volumes:
+      - /srv/docker/urza:/app/.urza/

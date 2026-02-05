@@ -91,8 +91,8 @@ ipython_config.py
 # .python-version
 # (In a Texas accent)
 # My stuff
-.env.dev
-.env.prod
+.env
+docker-compose.override.yml
 
 # pipenv
 #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
