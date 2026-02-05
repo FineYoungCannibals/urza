@@ -25,9 +25,7 @@ class UserRole(Base):
     name = Column(String(255), primary_key=True)
     description = Column(Text)
     admin = Column(Boolean, default=False)
-    can_create_hidden = Column(Boolean, default=False)
     can_see_hidden = Column(Boolean, default=False)
-    
     # Relationships
     users = relationship("User", back_populates="role")
 
