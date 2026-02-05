@@ -4,7 +4,7 @@ import logging
 from typing import Optional
 from fastapi import HTTPException, Security, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from urza.db.schemas import User, UserRole
+from urza.api.schemas import User, UserRole
 
 logger = logging.getLogger(__name__)
 security = HTTPBearer()
