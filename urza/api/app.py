@@ -4,9 +4,12 @@ from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 from urza.config.display import BANNER, APP_WELCOME, APP_DESC, APP_VERSION
-from config.settings import setup_logging, settings
-from config.startup import check_setup, setup_urza
+from urza.config.settings import setup_logging, settings
+from urza.config.startup import check_setup, setup_urza
 from contextlib import asynccontextmanager
+
+from urza.api.routes import users
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +18,8 @@ app = FastAPI(
     description=APP_DESC,
     version="0.1.0"
 )
+
+app.include_router(users.router)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,10 +40,7 @@ async def lifespan(app: FastAPI):
     # Shutting down the app
     logger.info("Shutting down Urza")
 
-# explicit route declaration 
-from routes import bots
 
-app.include_router(bots.router, prefix="/bots", tags=["bots"])
 
 @app.get("/health", tags=["health"])
 async def health_check():
