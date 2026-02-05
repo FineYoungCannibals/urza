@@ -63,7 +63,13 @@ uv run tests/test_telegram.py
 
 
 ### Docker 
-
 ```
 docker network create --driver bridge dev_lab
+```
+
+### Running for the first time
+Using alembic to prepare the database: 
+
+``` 
+uv run alembic upgrade head
 ```
