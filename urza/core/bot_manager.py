@@ -3,7 +3,6 @@
 
 import logging
 import uuid
-from core.spaces_client import DOAgent
 from core.telegram_client import UrzaTGClient
 
 logger = logging.getLogger(__name__)
@@ -14,75 +13,6 @@ def generate_bot_id() -> str:
     bot_id = str(uuid.uuid4())
     logger.debug(f"Generated bot_id: {bot_id}")
     return bot_id
-
-
-async def generate_s3_credentials(bot_id: str) -> tuple[str, str]:
-    """
-    Generate S3 access key and auth key via DigitalOcean Spaces API.
-    
-    Args:
-        bot_id: Bot identifier (used for key name)
-        
-    Returns:
-        Tuple of (access_key, secret_key)
-        
-    Raises:
-        Exception: If key creation fails
-    """
-    logger.info(f"Creating DO Spaces keys for bot: {bot_id}")
-    
-    try:
-        # Initialize DO agent
-        do_agent = DOAgent()
-        
-        # Create spaces keys with bot_id as name
-        key_name = f"urza_bot_{bot_id}"
-        response = do_agent.create_spaces_keys(key_name)
-        
-        # Extract credentials from response
-        access_key = response['spaces_key']['access_key']
-        secret_key = response['spaces_key']['secret_key']
-        
-        logger.info(f"Successfully created DO Spaces keys for bot: {bot_id}")
-        return (access_key, secret_key)
-        
-    except Exception as e:
-        logger.error(f"Failed to create DO Spaces keys for bot {bot_id}: {str(e)}")
-        raise Exception(f"Failed to create S3 credentials: {str(e)}")
-
-
-async def revoke_s3_credentials(bot_id: str, access_key: str) -> tuple[str, str]:
-    """
-    Revoke existing S3 credentials and create new ones.
-    
-    Args:
-        bot_id: Bot identifier
-        access_key: Existing access key to revoke
-        
-    Returns:
-        Tuple of (new_access_key, new_secret_key)
-        
-    Raises:
-        Exception: If key revocation/creation fails
-    """
-    logger.info(f"Revoking DO Spaces keys for bot: {bot_id}")
-    
-    try:
-        do_agent = DOAgent()
-        key_name = f"urza_bot_{bot_id}"
-        
-        # Revoke old key and create new one
-        response = do_agent.revoke_spaces_keys(key_name, access_key)
-        
-        new_access_key = response['spaces_key']['access_key']
-        new_secret_key = response['spaces_key']['secret_key']
-        
-        logger.info(f"Successfully revoked and recreated keys for bot: {bot_id}")
-        return (new_access_key, new_secret_key)
-        
-    except Exception as e:
-        logger.error(f"Failed to revoke/recreate keys for bot {bot_id}: {str(e)}")
-        raise Exception(f"Failed to revoke S3 credentials: {str(e)}")
 
 
 async def create_telegram_bot(bot_id: str) -> tuple[str, str, str]:
