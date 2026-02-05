@@ -89,3 +89,11 @@ alembic upgrade head
 # Verify tables were created
 mysql -h 127.0.0.1 -P 3306 -u urza_user -p urza_dev -e "SHOW TABLES;"
 ```
+
+
+" I just changed my db.models - what do i do? " 
+``` 
+alembic revision --autogenerate -m "change_i_made_comment" #this comment ends up being used as the file name && \
+
+alembic upgrade head
+```
