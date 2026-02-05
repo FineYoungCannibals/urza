@@ -117,6 +117,8 @@ class Task(Base):
     
     task_id = Column(String(36), primary_key=True)
     config = Column(JSON, nullable=False)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
     capability_id = Column(String(36), ForeignKey("capabilities.id"), nullable=False)
     platform_id = Column(String(36), ForeignKey("platforms.id"), nullable=False)
     created_by_id = Column(String(36), ForeignKey("users.user_id"), nullable=False)
