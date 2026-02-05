@@ -225,6 +225,14 @@ class APIKeyResponse(BaseModel):
     last_used: Optional[datetime] = None
     is_active: bool
 
+class APIKeyCreateResponse(BaseModel):
+    """Response when creating a new API key - includes raw key (only shown once!)"""
+    id: str
+    name: str
+    api_key: str  # RAW KEY - only shown in this response!
+    user_id: str
+    created_at: datetime
+
 # admins see all, admin+hidden see hidden, users can see only their own user info
 class User(BaseModel):
     user_id: str
