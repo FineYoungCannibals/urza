@@ -3,6 +3,8 @@
 services:
   # MySQL Database
   mysql:
+    env_file:
+      - .env
     image: mysql:8.0
     container_name: urza_mysql
     restart: unless-stopped
@@ -23,6 +25,8 @@ services:
 
   # Urza API Server
   urza_api:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile
