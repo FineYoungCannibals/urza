@@ -243,7 +243,7 @@ async def create_bot(bot_data: Dict[str, Any]) -> Dict[str, Any]:
         cursor.execute(
             """
             INSERT INTO bots (
-                bot_id, created_by_id, platform_id, s3_access_key, s3_auth_key,
+                bot_id, created_by_id, platform_id,
                 tg_bot_username, tg_bot_token, capabilities, last_checkin, 
                 created_at, is_hidden
             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -252,8 +252,6 @@ async def create_bot(bot_data: Dict[str, Any]) -> Dict[str, Any]:
                 bot_data['bot_id'],
                 bot_data['created_by_id'],
                 bot_data['platform_id'],
-                bot_data['s3_access_key'],
-                bot_data['s3_auth_key'],
                 bot_data['tg_bot_username'],
                 bot_data['tg_bot_token'],
                 capabilities_json,

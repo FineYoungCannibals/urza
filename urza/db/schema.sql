@@ -62,8 +62,6 @@ CREATE TABLE IF NOT EXISTS bots (
     bot_id VARCHAR(36) PRIMARY KEY,
     created_by_id VARCHAR(36) NOT NULL,
     platform_id VARCHAR(36) NOT NULL,
-    s3_access_key VARCHAR(255) NOT NULL,
-    s3_auth_key VARCHAR(255) NOT NULL,
     tg_bot_username VARCHAR(100) UNIQUE NOT NULL,
     tg_bot_token VARCHAR(255) NOT NULL,
     capabilities JSON NOT NULL,
