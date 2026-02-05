@@ -140,8 +140,6 @@ class Bot(BaseModel):
     bot_id: str
     created_by_id: str # FK to requesting user
     platform_id: str
-    s3_access_key: str
-    s3_auth_key: str
     tg_bot_username: str # The TG Bot tg_bot_username
     tg_bot_token: str
     capabilities: list[str] 
@@ -158,8 +156,6 @@ class BotCreateRequest(BaseModel):
 class BotCreateResponse(BaseModel):
     bot_id: str
     platform_id: str
-    s3_access_key: str
-    s3_auth_key: str
     tg_bot_username: str # tg_bot_username 
     tg_bot_token: str
     capabilities: list[str] 

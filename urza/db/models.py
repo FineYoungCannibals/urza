@@ -84,8 +84,6 @@ class Bot(Base):
     bot_id = Column(String(36), primary_key=True)
     created_by_id = Column(String(36), ForeignKey("users.user_id"), nullable=False)
     platform_id = Column(String(36), ForeignKey("platforms.id"), nullable=False)
-    s3_access_key = Column(String(255), nullable=False)
-    s3_auth_key = Column(String(255), nullable=False)
     tg_bot_username = Column(String(255), nullable=False)
     tg_bot_token = Column(String(255), nullable=False)
     last_checkin = Column(DateTime, nullable=True)
