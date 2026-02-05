@@ -1,4 +1,4 @@
-from urza.config.settings import BOT
+from urza.config.settings import settings
 
 APP_VERSION="0.1.0"
 
@@ -13,7 +13,7 @@ BANNER = f"""
 ║  ╚██████╔╝██║  ██║███████╗██║  ██║║
 ║   ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝║
 ║           {APP_VERSION}           ║
-║  [ {BOT} Orchestration System ]   ║
+║  [ {settings.bot_name} Orchestration System ]   ║
 ╚═══════════════════════════════════╝
 """
 
@@ -22,10 +22,9 @@ A telegram based bot orchestration system
 """
 
 
-APP_WELCOME="""
-_____
-                        .-'     '-.
-                       /           \
+APP_WELCOME=r"""
+                        .-'     '-.  
+                       /           \    
                       |   O     O   |
                       |      ^      |
                        \    \_/    /
