@@ -61,22 +61,6 @@ class Settings(BaseSettings):
         ...,
         description="S3-compatible bucket URL (e.g., https://bucket.region.digitaloceanspaces.com)"
     )
-    do_bucket_token: str = Field(
-        ...,
-        description="S3-compatible bucket secret key"
-    )
-    do_bucket_token_id: str = Field(
-        ...,
-        description="S3-compatible bucket access key ID"
-    )
-    do_bucket_name: str = Field(
-        ...,
-        description="S3-compatible bucket name"
-    )
-    do_region: str = Field(
-        default='us-east-1',
-        description="Storage region (for S3-compatible services)"
-    )
 
     # MySQL - REQUIRED passwords
     mysql_password: str = Field(

@@ -23,13 +23,13 @@ class DatabaseConnection:
     def get_connection(cls):
         """Get or create database connection"""
         if cls._connection is None or not cls._connection.open:
-            logger.info(f"Connecting to MySQL: {MYSQL_USER}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}")
+            logger.info(f"Connecting to MySQL: {settings.mysql_db}")
             cls._connection = pymysql.connect(
-                host=MYSQL_HOST,
-                port=MYSQL_PORT,
-                user=MYSQL_USER,
-                password=MYSQL_PASSWORD,
-                database=MYSQL_DB,
+                host=settings.mysql_host,
+                port=settings.mysql_port,
+                user=settings.mysql_user,
+                password=settings.mysql_password,
+                database=settings.mysql_db,
                 charset='utf8mb4',
                 cursorclass=pymysql.cursors.DictCursor,
                 autocommit=False
