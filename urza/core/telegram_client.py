@@ -1,6 +1,5 @@
 # /server/src/utils/telegram_client.py
-from urza.config.settings import SESSION_FILE, TG_API_HASH, TG_API_ID, TG_CHANNEL_ID
-from pathlib import Path
+from urza.config.settings import settings
 from telethon import TelegramClient
 from telethon.tl.functions.channels import EditAdminRequest, EditBannedRequest
 from telethon.tl.types import ChatAdminRights, ChatBannedRights
@@ -15,9 +14,9 @@ class UrzaTGClient:
     """Wrapper around Telethon client for Urza operations"""
 
     def __init__(self) -> None:
-        self.session_file = SESSION_FILE
-        self.api_id = TG_API_ID
-        self.api_hash = TG_API_HASH
+        self.session_file = settings.session_file
+        self.api_id = settings.tg_api_id
+        self.api_hash = settings.tg_api_hash
         self.client = None  # Don't create client in __init__
     
     async def connect(self):
@@ -208,7 +207,7 @@ class UrzaTGClient:
     # ==================== CHANNEL OPERATIONS ===============
 
     async def ban_from_channel(self, bot_username):
-        channel = await self.client.get_entity(TG_CHANNEL_ID)
+        channel = await self.client.get_entity(settings.tg_channel_id)
         bot = await self.client.get_entity(bot_username)
 
         await self.client(EditBannedRequest(
@@ -223,7 +222,7 @@ class UrzaTGClient:
         return True
 
     async def add_bot_to_channel(self,bot_username):
-        channel = await self.client.get_entity(int(TG_CHANNEL_ID))
+        channel = await self.client.get_entity(int(settings.tg_channel_id))
 
         bot = await self.client.get_entity(bot_username)
 

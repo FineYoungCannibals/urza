@@ -2,6 +2,7 @@
 import logging
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
+from pathlib import Path
 
 
 class Settings(BaseSettings):
@@ -9,6 +10,8 @@ class Settings(BaseSettings):
     Application settings loaded from environment variables and .env file.
     All fields marked with Field(...) are REQUIRED and must be set in environment.
     """
+    base_dir: Path = Path('/app/.urza')
+    session_file: Path = Path('/app/.urza/urza_session.session')
     
     # API Settings
     log_level: str = Field(

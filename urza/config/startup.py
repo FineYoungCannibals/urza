@@ -1,16 +1,14 @@
 from pathlib import Path
+from urza.config.settings import settings
 
-# Paths
-URZA_DIR = Path('/app') / '.urza'
-SESSION_FILE = URZA_DIR / 'urza_session.session'
 
 def ensure_directories():
-    URZA_DIR.mkdir(parents=True, exist_ok=True)
+    settings.base_dir.mkdir(parents=True, exist_ok=True)
 
 def check_setup():
     """Check if session file for TG has been configured """
     status = False
-    if SESSION_FILE.exists():
+    if settings.session_file.exists():
         status = True
     return status
 
