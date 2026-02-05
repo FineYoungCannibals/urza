@@ -71,5 +71,13 @@ docker network create --driver bridge dev_lab
 Using alembic to prepare the database: 
 
 ``` 
+uv add alembic && \
+uv run alembic init almebic && \ # from the project root
+# make edits to the env.py file
+# - import your settings that define your datasource url
+# - import your db.models Base object
+# - set your target_metadata variable to Base's metadata property
+# - set your sqlalchemy url key
+# - config.set_main_option("sqlalchemy.url", settings.your_sync_database_url_property)
 uv run alembic upgrade head
 ```

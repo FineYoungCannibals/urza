@@ -5,11 +5,6 @@ from sqlalchemy import pool
 
 from alembic import context
 
-# Import your settings and models
-from urza.config.settings import settings
-# TODO: Import your SQLAlchemy Base
-from urza.db.models import Base
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -19,17 +14,16 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Set the SQLAlchemy URL from your settings
+# add your model's MetaData object here
+from urza.config.settings import settings
 config.set_main_option(
     "sqlalchemy.url",
     settings.database_url_sync
 )
-# add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
+from urza.db.models import Base
+# the Base object from your db models class (not your models for your pydantic models)
 # target_metadata = mymodel.Base.metadata
-# TODO: Uncomment when you have SQLAlchemy models defined
-# target_metadata = Base.metadata
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
