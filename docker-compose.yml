@@ -13,6 +13,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DB}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_USER: ${MYSQL_USER}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -57,10 +59,7 @@ services:
       
       # DigitalOcean
       DO_TOKEN: ${DO_TOKEN}
-      DO_BUCKET_TOKEN: ${DO_BUCKET_TOKEN}
-      DO_BUCKET_TOKEN_ID: ${DO_BUCKET_TOKEN_ID}
       DO_BUCKET_URL: ${DO_BUCKET_URL}
-      DO_BUCKET_NAME: ${DO_BUCKET_NAME}
     ports:
       - "${API_PORT:-8000}:8000"
     networks:

@@ -79,5 +79,13 @@ uv run alembic init almebic && \ # from the project root
 # - set your target_metadata variable to Base's metadata property
 # - set your sqlalchemy url key
 # - config.set_main_option("sqlalchemy.url", settings.your_sync_database_url_property)
-uv run alembic upgrade head
+
+# Generate migration
+alembic revision --autogenerate -m "initial_schema"
+
+# Apply migration
+alembic upgrade head
+
+# Verify tables were created
+mysql -h 127.0.0.1 -P 3306 -u urza_user -p urza_dev -e "SHOW TABLES;"
 ```
