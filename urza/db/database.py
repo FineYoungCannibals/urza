@@ -5,7 +5,7 @@ import pymysql
 import json
 from typing import List, Optional, Dict, Any, Tuple
 from datetime import datetime, UTC
-from urza.config.settings import MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB
+from urza.config.settings import settings
 
 logger = logging.getLogger(__name__)
 
