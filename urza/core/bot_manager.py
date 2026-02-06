@@ -3,7 +3,7 @@
 
 import logging
 import uuid
-from core.telegram_client import UrzaTGClient
+from urza.core.telegram_client import UrzaTGClient
 
 logger = logging.getLogger(__name__)
 
