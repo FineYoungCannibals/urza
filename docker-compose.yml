@@ -58,9 +58,7 @@ services:
 
   # Urza API Server
   urza_api:
-    <<: *common-base
-    <<: *common-services
-    <<: *common-build
+    <<: [*common-base, *common-services, *common-build]
     container_name: urza_api
     environment:
       API_HOST: 0.0.0.0
@@ -77,9 +75,7 @@ services:
 
   # Urza Bot - Telegram monitor and task poster
   urza_bot:
-    <<: *common-base
-    <<: *common-services
-    <<: *common-build
+    <<: [*common-base, *common-services, *common-build]
     container_name: urza_bot
     environment:
       TG_API_ID: ${TG_API_ID}
@@ -93,9 +89,7 @@ services:
 
   # Cron Evaluator - Checks scheduled tasks
   urza_scheduler:
-    <<: *common-base
-    <<: *common-services
-    <<: *common-build
+    <<: [*common-base, *common-services, *common-build]
     container_name: urza_cron
     command: >
       bash -c "
