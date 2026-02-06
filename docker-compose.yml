@@ -88,7 +88,7 @@ services:
       "
 
   # Cron Evaluator - Checks scheduled tasks
-  urza_scheduler:
+  urza_cron:
     <<: [*common-base, *common-services, *common-build]
     container_name: urza_cron
     command: >
@@ -96,9 +96,9 @@ services:
         uv run python -m urza.services.orchestrator.main
       "
     
-  urza_publisher:
+  urza_pub:
     <<: [*common-base, *common-services, *common-build]
-    container_name: urza_publisher
+    container_name: urza_pub
     command: >
       bash -c "
         uv run python -m urza.services.publisher.main

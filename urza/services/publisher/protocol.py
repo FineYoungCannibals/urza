@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def format_task_broadcast(execution_id: str, task_id: str, task_config: Dict[str, Any], 
-                         timeout_seconds: int, task_name: str = None) -> str:
+                         timeout_seconds: int, task_name: str = str(None)) -> str:
     """
     Format a task execution for broadcast to Telegram channel.
     

@@ -41,7 +41,7 @@ class BotServiceSettings(BaseSettings):
     
     # Database Configuration
     mysql_host: str = Field(
-        default='localhost',
+        default='mysql',
         description="MySQL server host"
     )
     mysql_port: int = Field(

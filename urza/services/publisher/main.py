@@ -34,8 +34,8 @@ class UrzaPublisher:
     
     def __init__(self):
         self.client = TelegramClient(
-            str(publisher_settings.session_file),
-            publisher_settings.tg_api_id,
+            'bot_session',
+            int(publisher_settings.tg_api_id),
             publisher_settings.tg_api_hash
         )
         self.channel_id = int(publisher_settings.tg_channel_id)
@@ -46,9 +46,9 @@ class UrzaPublisher:
         logger.info("Starting Urza Publisher Service...")
         
         # Connect to Telegram
-        await self.client.start()
+        await self.client.start(bot_token=publisher_settings.tg_controller_bot_token) #type: ignore
         me = await self.client.get_me()
-        logger.info(f"Connected to Telegram as: {me.first_name} (@{me.username})")
+        logger.info(f"Connected to Telegram as: {me.first_name} (@{me.username})") #type: ignore
         
         self.running = True
         logger.info(f"Publishing to channel: {self.channel_id}")
@@ -151,7 +151,7 @@ class UrzaPublisher:
         """Graceful shutdown"""
         logger.info("Stopping Urza Publisher Service...")
         self.running = False
-        await self.client.disconnect()
+        await self.client.disconnect() #type: ignore
 
 
 async def main():

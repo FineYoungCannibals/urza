@@ -9,6 +9,7 @@ This service reads TaskExecutions from Redis queue and broadcasts them to Telegr
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from pathlib import Path
+from typing import Optional
 
 
 class PublisherSettings(BaseSettings):
@@ -32,9 +33,9 @@ class PublisherSettings(BaseSettings):
         ...,
         description="Telegram channel ID to broadcast tasks"
     )
-    session_file: Path = Field(
-        default=Path('/app/.urza/urza_session.session'),
-        description="Path to Telegram session file"
+    tg_controller_bot_token: str = Field(
+        ...,
+        description="Telegram bot token with message write access to channel"
     )
     
     # Database Configuration
@@ -68,11 +69,11 @@ class PublisherSettings(BaseSettings):
         default=6379,
         description="Redis port"
     )
-    redis_password: str = Field(
+    redis_password: Optional[str] = Field(
         default=None,
         description="Redis password (optional)"
     )
-    redis_user: str = Field(
+    redis_user: Optional[str] = Field(
         default=None,
         description="Redis username (optional)"
     )
