@@ -1,18 +1,27 @@
 # /docker-compose.yml
 
 x-common-base: &common-base
-  env_file:
-    - .env
   environment:
-    LOG_LEVEL: ${LOG_LEVEL:-INFO}
-    MYSQL_HOST: mysql
-    MYSQL_PORT: 3306
+    LOG_LEVEL: ${LOG_LEVEL}
+
+    MYSQL_HOST: ${MYSQL_HOST}
+    MYSQL_PORT: ${MYSQL_PORT}
     MYSQL_USER: ${MYSQL_USER}
     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     MYSQL_DB: ${MYSQL_DB}
-    REDIS_HOST: redis
-    REDIS_PORT: 6379
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+    REDIS_HOST: ${REDIS_HOST}
+    REDIS_PORT: ${REDIS_PORT}
+
+    TG_API_ID: ${TG_API_ID}
+    TG_API_HASH: ${TG_API_HASH}
+    TG_CHANNEL_ID: ${TG_CHANNEL_ID}
+    TG_CONTROLLER_BOT_TOKEN: ${TG_CONTROLLER_BOT_TOKEN}
+
+    DO_TOKEN: ${DO_TOKEN}
+    DO_BASE_URL: ${DO_BASE_URL}
+    DO_BUCKET_URL: ${DO_BUCKET_URL}
   networks:
     - default
   restart: unless-stopped
@@ -77,11 +86,6 @@ services:
   urza_bot:
     <<: [*common-base, *common-services, *common-build]
     container_name: urza_bot
-    environment:
-      TG_API_ID: ${TG_API_ID}
-      TG_API_HASH: ${TG_API_HASH}
-      TG_CHANNEL_ID: ${TG_CHANNEL_ID}
-      TG_CONTROLLER_BOT_TOKEN: ${TG_CONTROLLER_BOT_TOKEN}
     command: >
       bash -c "
         uv run python -m urza.services.bot.main
@@ -95,7 +99,7 @@ services:
       bash -c "
         uv run python -m urza.services.orchestrator.main
       "
-    
+  # Publisher service - Checks queue for task executions to put on TG Channel 
   urza_pub:
     <<: [*common-base, *common-services, *common-build]
     container_name: urza_pub

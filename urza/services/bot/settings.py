@@ -8,10 +8,9 @@ This service runs independently from the API and only needs:
 - Database connection (to update task executions)
 """
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, ConfigDict, field_validator
 import logging
-
 
 class BotServiceSettings(BaseSettings):
     """
@@ -22,7 +21,7 @@ class BotServiceSettings(BaseSettings):
     """
     
     # Telegram Bot Authentication
-    tg_api_id: str = Field(
+    tg_api_id: int = Field(
         ...,
         description="Telegram API ID for Telethon client"
     )
@@ -91,10 +90,11 @@ class BotServiceSettings(BaseSettings):
             f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_db}"
         )
     
-    class Config:
-        env_file=".env",
+    model_config = SettingsConfigDict(
         case_sensitive=False,
-        extra='allow'
+        extra='allow',
+        env_file='/app/.env'
+    )
 
 
 # Singleton instance

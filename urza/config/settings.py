@@ -66,7 +66,7 @@ class Settings(BaseSettings):
     )
     # MySQL - Optional with defaults
     mysql_host: str = Field(
-        default='localhost',
+        default='mysql',
         description="MySQL server host"
     )
     mysql_port: int = Field(
@@ -120,7 +120,7 @@ class Settings(BaseSettings):
         )
         
     class Config:
-        env_file = ".env"
+        env_file = "/app/.env"
         case_sensitive = False
         extra='allow'
 

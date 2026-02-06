@@ -6,7 +6,7 @@ Configuration for urza_publisher service.
 This service reads TaskExecutions from Redis queue and broadcasts them to Telegram channel.
 """
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field
 from pathlib import Path
 from typing import Optional
@@ -40,7 +40,7 @@ class PublisherSettings(BaseSettings):
     
     # Database Configuration
     mysql_host: str = Field(
-        default='localhost',
+        default='mysql',
         description="MySQL server host"
     )
     mysql_port: int = Field(
@@ -113,10 +113,11 @@ class PublisherSettings(BaseSettings):
             return f"redis://:{self.redis_password}@{self.redis_host}:{self.redis_port}/{self.redis_db}"
         return f"redis://{self.redis_host}:{self.redis_port}/{self.redis_db}"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-        extra = 'allow'
+    model_config = SettingsConfigDict( 
+        case_sensitive = False,
+        extra = 'allow',
+        env_file='/app/.env'
+    )
 
 
 # Singleton instance
