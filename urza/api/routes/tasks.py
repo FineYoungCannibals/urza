@@ -80,7 +80,6 @@ async def create_task(
         execution = models.TaskExecution(
             execution_id=execution_id,
             task_id=task_id,
-            created_by_id=current_user.user_id,
             status=models.TaskStatusEnum.PENDING,
             submitted_at=datetime.now(UTC)
         )

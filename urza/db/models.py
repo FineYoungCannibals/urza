@@ -88,7 +88,6 @@ class TaskExecution(Base):
     
     execution_id = Column(String(36), primary_key=True)
     task_id = Column(String(36), ForeignKey("tasks.task_id"), nullable=False)
-    created_by_id = Column(String(36), ForeignKey("users.user_id"), nullable=False)
     assigned_to = Column(String(36), ForeignKey("bots.bot_id"), nullable=True)
     submitted_at = Column(DateTime, default=lambda: datetime.now(UTC))
     queued_at = Column(DateTime, nullable=True)

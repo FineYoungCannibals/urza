@@ -59,7 +59,6 @@ class TaskResponse(BaseModel):
 class TaskExecution(BaseModel):
     execution_id: str
     task_id: str # FK task
-    created_by_id: str # FK to the requesting user, captured from the request to create
     assigned_to: Optional[str] = None
     submitted_at: datetime = Field(default_factory=lambda: datetime.now(UTC)) # api will do this
     queued_at: Optional[datetime]=None # api will do this
@@ -77,7 +76,6 @@ class TaskExecutionCreateRequest(BaseModel):
 class TaskExecutionResponse(BaseModel):
     execution_id: str
     task_id: str
-    created_by_username: str #derived from the created_by_id in the TaskExecution
     status: TaskStatus
     assigned_to: Optional[str] = None
     results: Optional[dict] = None
