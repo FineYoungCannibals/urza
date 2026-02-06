@@ -122,6 +122,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra='allow'
 
 
 # Create settings instance - reads from environment variables and .env file
