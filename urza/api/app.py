@@ -12,6 +12,7 @@ from contextlib import asynccontextmanager
 from urza.api.routes import users
 from urza.api.routes import api_keys
 from urza.api.routes import tasks
+from urza.api.routes import task_executions
 
 import logging
 
@@ -25,6 +26,7 @@ app = FastAPI(
 app.include_router(users.router)
 app.include_router(api_keys.router)
 app.include_router(tasks.router)
+app.include_router(task_executions.router)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
