@@ -7,14 +7,16 @@ from enum import Enum
 # used by modules for taskstatus
 class TaskStatus(str,Enum):
     BROADCASTED = "broadcasted"
-    CLAIMED = "claimed"
     IN_PROGRESS = "in_progress"
+    PENDING = "pending"
     COMPLETED = "completed"
     FAILED = "failed"
     TIMEDOUT = "timedout"
 
 class Task(BaseModel):
     task_id: str
+    name: str
+    description: Optional[str]
     config: dict
     created_by_id: str # FK to user_id , will be derived by apikey
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
@@ -26,13 +28,25 @@ class Task(BaseModel):
     is_hidden: bool = False
 
 class TaskCreateRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
     config: dict
     timeout_seconds: int = 3600
     cron_schedule: Optional[str] = None
     run_now: bool = False 
 
+class TaskUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    config: Optional[dict] = None
+    cron_schedule: Optional[str] = None
+    timeout_seconds: Optional[int] = None
+    is_active: Optional[bool] = None
+
 class TaskResponse(BaseModel):
     task_id: str
+    name: str
+    description: Optional[str]=None
     created_at: datetime
     next_run: Optional[datetime] = None
     last_run: Optional[datetime] = None
