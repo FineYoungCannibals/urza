@@ -13,97 +13,32 @@ class TaskStatus(str,Enum):
     FAILED = "failed"
     TIMEDOUT = "timedout"
 
-# No API endpoint, this is referenced by other objects or 
-# used by modules to write ProofOfWork to the database
-class ProofOfWork(BaseModel):
-    id: str
-    name: str
-    link: str
-    description: Optional[str] = None
-
-# needs apiendpoint, but this is admins only
-class Capability(BaseModel):
-    id: str
-    name: str
-    version: str
-    description: str
-
-# needs apiendpoint, all users can create, admins can delete
-class Platform(BaseModel):
-    id: str
-    name: str
-    description: str
-    os_major_version: str
-
-# /notification endpoint, GET by all, DELETE by admin or creating user, UPDATE by admin or creating user
-class NotificationConfig(BaseModel):
-    """ Urza will notify channel configurations saved here """
-    id: str
-    profile_name: str
-    profile_description: str
-    created_by_id: str
-    webhook_url: Optional[str] = None
-    telegram_chat_id: Optional[str] = None
-    slack_webhook_url: Optional[str] = None
-    slack_channel: Optional[str] = None
-    notify_on_task_completed: bool = True
-    notify_on_task_error: bool = True
-    notify_on_task_timeout: bool = True
-    notify_on_bot_offline: bool = False
-
-# /notification endpoint POST request
-class NotificationConfigCreateRequest(BaseModel):
-    """ Urza will notify channel configurations saved here """
-    profile_name: str
-    profile_description: str
-    webhook_url: Optional[str] = None
-    telegram_chat_id: Optional[str] = None
-    slack_webhook_url: Optional[str] = None
-    slack_channel: Optional[str] = None
-    notify_on_task_completed: bool = True
-    notify_on_task_error: bool = True
-    notify_on_task_timeout: bool = True
-    notify_on_bot_offline: bool = False
-
 class Task(BaseModel):
     task_id: str
     config: dict
-    capability_id: str # FK Capability
-    platform_id: str # FK platform
     created_by_id: str # FK to user_id , will be derived by apikey
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    notification_config_id: Optional[str] = None #FK notificationconfig 
     next_run: Optional[datetime] = None
     last_run: Optional[datetime] = None
     timeout_seconds: int = 3600
     cron_schedule: Optional[str]  = None
-    proof_of_work_required: bool = False
     is_active: bool = True
     is_hidden: bool = False
 
 class TaskCreateRequest(BaseModel):
-    capability_id: str
-    platform_id: str
     config: dict
-    proof_of_work_required: bool = False
-    notification_config_id: Optional[str] = None
     timeout_seconds: int = 3600
     cron_schedule: Optional[str] = None
     run_now: bool = False 
 
 class TaskResponse(BaseModel):
     task_id: str
-    platform_id: str
     created_at: datetime
-    notification_config_id: Optional[str] = None
     next_run: Optional[datetime] = None
     last_run: Optional[datetime] = None
-    capability_id: str
     created_by_username: str # derived from user_id in Task 
     config: dict
-    run_now: bool
     cron_schedule: Optional[str] = None
-    proof_of_work_required: bool = False
     timeout_seconds: int
     is_active: bool
 
@@ -117,7 +52,6 @@ class TaskExecution(BaseModel):
     claimed_at: Optional[datetime]=None # Urzabot will do this
     completed_at: Optional[datetime] = None
     status: TaskStatus = TaskStatus.BROADCASTED
-    proof_of_work_id: Optional[str] = None# FK proof of work
     error_message: Optional[str] = None
     results: Optional[dict] = None
     retry_count: int = 0
@@ -132,7 +66,6 @@ class TaskExecutionResponse(BaseModel):
     created_by_username: str #derived from the created_by_id in the TaskExecution
     status: TaskStatus
     assigned_to: Optional[str] = None
-    proof_of_work_id: Optional[str]  = None
     results: Optional[dict] = None
     submitted_at: Optional[datetime] = None
     queued_at: Optional[datetime] = None
@@ -145,10 +78,8 @@ class TaskExecutionResponse(BaseModel):
 class Bot(BaseModel):
     bot_id: str
     created_by_id: str # FK to requesting user
-    platform_id: str
     tg_bot_username: str # The TG Bot tg_bot_username
     tg_bot_token: str
-    capabilities: list[str] 
     last_checkin: Optional[datetime] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     is_hidden: bool = False
@@ -156,23 +87,18 @@ class Bot(BaseModel):
 # users will create bots with this Request Object
 # only users with  can_create_hidden can use is_hidden
 class BotCreateRequest(BaseModel):
-    platform_id: str
-    capabilities: list[str]
+    pass
 
 class BotCreateResponse(BaseModel):
     bot_id: str
-    platform_id: str
     tg_bot_username: str # tg_bot_username 
     tg_bot_token: str
-    capabilities: list[str] 
 
 # When a bot is created or lookedup , this class is used
 class BotLookupResponse(BaseModel):
     bot_id: str
     created_by_username: str # derived from the user_id
     tg_bot_username: str
-    platform_id: str
-    capabilities: list[str]
     created_at: datetime
 
 class BotCheckin(BaseModel):
@@ -207,7 +133,6 @@ class UserRoleResponse(BaseModel):
     name: str
     description: str
     admin: bool
-
 
 # admins see all, users can see their own key information
 # admins with hidden can see all plus hidden
