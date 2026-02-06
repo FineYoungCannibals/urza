@@ -291,7 +291,7 @@ async def delete_task(
         raise HTTPException(status_code=404, detail="Task not found")
     
     # Check access permissions
-    check_resource_access(task.created_by_id, current_user, task.is_hidden)
+    check_resource_access(task.created_by_id, current_user, task.is_hidden) #type: ignore
     
     # Soft delete
     task.is_hidden = True # type: ignore
