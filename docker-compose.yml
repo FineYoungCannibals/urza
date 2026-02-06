@@ -93,7 +93,7 @@ services:
     container_name: urza_cron
     command: >
       bash -c "
-        uv run python -m urza.core.cron_evaluator
+        uv run python -m urza.services.orchestrator.main
       "
 
 volumes:
