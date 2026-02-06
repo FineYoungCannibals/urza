@@ -3,6 +3,7 @@ import logging
 from pydantic_settings import BaseSettings
 from pydantic import Field, field_validator
 from pathlib import Path
+from typing import Optional
 
 
 class Settings(BaseSettings):
@@ -32,39 +33,28 @@ class Settings(BaseSettings):
         default='thopter',
         description="Name of the bot instance"
     )
-
-    # Telegram - REQUIRED
-    tg_api_id: int = Field(
+    # Redis - Optional
+    redis_password: Optional[str] =Field(
+        default=None,
+        description="Redis user password"
+    )
+    redis_user: Optional[str] =Field(
+        default=None,
+        description="Redis user password"
+    )
+    # Redis - REQUIRED
+    redis_host: str = Field(
         ...,
-        description="Telegram API ID from https://my.telegram.org"
+        description="Redis Hostname"
     )
-    tg_api_hash: str = Field(
-        ...,
-        description="Telegram API hash from https://my.telegram.org"
+    redis_port: Optional[int] = Field(
+        default=6379,
+        description="Redis port"
     )
-    tg_channel_id: int = Field(
-        ...,
-        description="Telegram channel ID for bot coordination (negative integer for channels)"
+    redis_db: int = Field(
+        default=0,
+        description="Redis DB Number"
     )
-    tg_controller_bot_token: str = Field(
-        ...,
-        description="Telegram bot token from @BotFather"
-    )
-
-    # DigitalOcean / S3-compatible Storage - REQUIRED
-    do_token: str = Field(
-        ...,
-        description="DigitalOcean API token for managing infrastructure"
-    )
-    do_base_url: str = Field(
-        default='https://api.digitalocean.com/v2/',
-        description="DigitalOcean API base URL"
-    )
-    do_bucket_url: str = Field(
-        ...,
-        description="S3-compatible bucket URL (e.g., https://bucket.region.digitaloceanspaces.com)"
-    )
-
     # MySQL - REQUIRED passwords
     mysql_password: str = Field(
         ...,
@@ -103,6 +93,15 @@ class Settings(BaseSettings):
         else:
             print(f"WARNING: Invalid log level '{v}', defaulting to INFO")
             return 'INFO'
+
+    @property
+    def redis_url(self) -> str:
+        """Generate Redis connection URL"""
+        if self.redis_user and self.redis_password:
+            return f"redis://{self.redis_user}:{self.redis_password}@{self.redis_host}:{self.redis_port}/{self.redis_db}"
+        elif self.redis_password:
+            return f"redis://:{self.redis_password}@{self.redis_host}:{self.redis_port}/{self.redis_db}"
+        return f"redis://{self.redis_host}:{self.redis_port}/{self.redis_db}"
 
     @property
     def database_url(self) -> str:
