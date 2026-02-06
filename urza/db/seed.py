@@ -8,6 +8,7 @@ import logging
 from datetime import datetime, UTC
 from urza.db.session import SessionLocal
 from urza.db import models
+from urza.api.auth import generate_api_key
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,14 +32,12 @@ def seed_data():
                 name="admin",
                 description="Administrator with full access",
                 admin=True,
-                can_create_hidden=True,
                 can_see_hidden=True
             )
             user_role = models.UserRole(
                 name="user",
                 description="Regular user",
                 admin=False,
-                can_create_hidden=False,
                 can_see_hidden=False
             )
             db.add(admin_role)
@@ -90,69 +89,48 @@ def seed_data():
             db.commit()
             logger.info(f"✅ Test user created: {user_id}")
         
-        # 4. Create Platforms
-        logger.info("Creating platforms...")
+        # 4. Create API Keys for testing
+        logger.info("Creating API keys...")
         
-        existing_ubuntu = db.query(models.Platform).filter_by(name="Ubuntu Server 22.04").first()
-        if existing_ubuntu:
-            logger.info("Platforms already exist, skipping")
-            ubuntu_id = existing_ubuntu.id
+        existing_admin_key = db.query(models.APIKey).filter_by(
+            user_id=admin_id,
+            name="admin-dev-key"
+        ).first()
+        
+        if existing_admin_key:
+            logger.info("API keys already exist, skipping")
         else:
-            ubuntu_id = str(uuid.uuid4())
-            debian_id = str(uuid.uuid4())
+            # Admin API key
+            raw_admin_key, hashed_admin_key = generate_api_key()
+            admin_api_key = models.APIKey(
+                id=str(uuid.uuid4()),
+                name="admin-dev-key",
+                hashed_key=hashed_admin_key,
+                user_id=admin_id,
+                created_by_id=admin_id,
+                is_active=True,
+                is_hidden=False
+            )
             
-            ubuntu_platform = models.Platform(
-                id=ubuntu_id,
-                name="Ubuntu Server 22.04",
-                description="Ubuntu Linux Server",
-                os_major_version="22.04"
+            # Test user API key
+            raw_user_key, hashed_user_key = generate_api_key()
+            user_api_key = models.APIKey(
+                id=str(uuid.uuid4()),
+                name="testuser-dev-key",
+                hashed_key=hashed_user_key,
+                user_id=user_id,
+                created_by_id=admin_id,
+                is_active=True,
+                is_hidden=False
             )
-            debian_platform = models.Platform(
-                id=debian_id,
-                name="Debian 12",
-                description="Debian Linux",
-                os_major_version="12"
-            )
-            db.add(ubuntu_platform)
-            db.add(debian_platform)
-            db.commit()
-            logger.info(f"✅ Platforms created: Ubuntu={ubuntu_id}, Debian={debian_id}")
-        
-        # 5. Create Capabilities
-        logger.info("Creating capabilities...")
-        
-        existing_scraping = db.query(models.Capability).filter_by(name="web-scraping").first()
-        if existing_scraping:
-            logger.info("Capabilities already exist, skipping")
-            scraping_id = existing_scraping.id
-        else:
-            scraping_id = str(uuid.uuid4())
-            api_id = str(uuid.uuid4())
-            osint_id = str(uuid.uuid4())
             
-            scraping_cap = models.Capability(
-                id=scraping_id,
-                name="web-scraping",
-                version="1.0.0",
-                description="Selenium-based web scraping with RowdyBottyPiper"
-            )
-            api_cap = models.Capability(
-                id=api_id,
-                name="api-testing",
-                version="1.0.0",
-                description="RESTful API endpoint testing"
-            )
-            osint_cap = models.Capability(
-                id=osint_id,
-                name="osint-collection",
-                version="1.0.0",
-                description="Open source intelligence gathering"
-            )
-            db.add(scraping_cap)
-            db.add(api_cap)
-            db.add(osint_cap)
+            db.add(admin_api_key)
+            db.add(user_api_key)
             db.commit()
-            logger.info(f"✅ Capabilities created: scraping={scraping_id}, api={api_id}, osint={osint_id}")
+            
+            logger.info(f"✅ API keys created")
+            logger.info(f"   Admin API Key: {raw_admin_key}")
+            logger.info(f"   Test User API Key: {raw_user_key}")
         
         logger.info("\n" + "="*60)
         logger.info("✅ Database seeded successfully!")
@@ -160,9 +138,8 @@ def seed_data():
         logger.info(f"\n📝 Test Credentials:")
         logger.info(f"   Admin User ID: {admin_id}")
         logger.info(f"   Test User ID: {user_id}")
-        logger.info(f"   Ubuntu Platform ID: {ubuntu_id}")
-        logger.info(f"   Web Scraping Capability ID: {scraping_id}")
         logger.info("\n💡 You can now test the API endpoints!")
+        logger.info("   Use the X-API-Key header with one of the keys above")
         logger.info("="*60 + "\n")
         
     except Exception as e:
