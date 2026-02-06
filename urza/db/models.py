@@ -12,8 +12,8 @@ import enum
 Base = declarative_base()
 
 class TaskStatusEnum(str, enum.Enum):
+    PENDING = "pending"
     BROADCASTED = "broadcasted"
-    CLAIMED = "claimed"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
     FAILED = "failed"
