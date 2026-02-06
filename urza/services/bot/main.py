@@ -70,6 +70,16 @@ class UrzaBotService:
         ))
         async def on_result(event):
             await protocol.handle_result(event, SessionLocal)
+
+        @self.client.on(events.NewMessage(
+            chats=self.channel_id,
+            pattern=r'^/checkin'
+        ))
+        async def on_checkin(event):
+            await protocol.handle_checkin(event, SessionLocal)
+    
+    # In the register_handlers method, add:
+
     
     async def stop(self):
         """Graceful shutdown"""

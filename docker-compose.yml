@@ -1,15 +1,40 @@
 # /docker-compose.yml
 
+x-common-base: &common-base
+  env_file:
+    - .env
+  environment:
+    LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    MYSQL_HOST: mysql
+    MYSQL_PORT: 3306
+    MYSQL_USER: ${MYSQL_USER}
+    MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    MYSQL_DB: ${MYSQL_DB}
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
+  networks:
+    - default
+  restart: unless-stopped
+
+x-common-build: &common-build
+  build:
+    context: .
+    dockerfile: Dockerfile
+
+x-common-services: &common-services
+  depends_on:
+    mysql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
 services:
   # Redis for task queue
   redis:
     image: redis:alpine
     container_name: urza_redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    networks:
-      - dev_lab
+    <<: *common-base
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -18,22 +43,13 @@ services:
 
   # MySQL Database
   mysql:
-    env_file:
-      - .env
+    <<: *common-base
     image: mysql:8.0
     container_name: urza_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - dev_lab
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
@@ -42,34 +58,18 @@ services:
 
   # Urza API Server
   urza_api:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *common-base
+    <<: *common-services
+    <<: *common-build
     container_name: urza_api
-    restart: unless-stopped
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
       API_HOST: 0.0.0.0
       API_PORT: ${API_PORT:-8000}
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DB: ${MYSQL_DB}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
     ports:
       - "${API_PORT:-8000}:8000"
     networks:
       - dev_lab
+      - default
     command: >
       bash -c "
         uv run uvicorn urza.api.app:app --host 0.0.0.0 --port 8000 --reload
@@ -77,63 +77,26 @@ services:
 
   # Urza Bot - Telegram monitor and task poster
   urza_bot:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *common-base
+    <<: *common-services
+    <<: *common-build
     container_name: urza_bot
-    restart: unless-stopped
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
     environment:
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DB: ${MYSQL_DB}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
       TG_API_ID: ${TG_API_ID}
       TG_API_HASH: ${TG_API_HASH}
       TG_CHANNEL_ID: ${TG_CHANNEL_ID}
       TG_CONTROLLER_BOT_TOKEN: ${TG_CONTROLLER_BOT_TOKEN}
-    networks:
-      - dev_lab
     command: >
       bash -c "
-        uv run python -m urza.core.urza_bot
+        uv run python -m urza.services.bot.main
       "
 
   # Cron Evaluator - Checks scheduled tasks
   urza_scheduler:
-    env_file:
-      - .env
-    build:
-      context: .
-      dockerfile: Dockerfile
+    <<: *common-base
+    <<: *common-services
+    <<: *common-build
     container_name: urza_cron
-    restart: unless-stopped
-    depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DB: ${MYSQL_DB}
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-    networks:
-      - dev_lab
     command: >
       bash -c "
         uv run python -m urza.core.cron_evaluator

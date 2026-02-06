@@ -246,3 +246,57 @@ async def handle_result(event: events.NewMessage.Event, SessionFactory) -> None:
         db.rollback()
     finally:
         db.close()
+
+# Add this to urza/services/bot/protocol.py
+
+async def handle_checkin(event: events.NewMessage.Event, SessionFactory) -> None:
+    """
+    Handle /checkin command from bot workers.
+    
+    Expected format: /checkin {"bot_id": "uuid", "timestamp": "ISO8601"}
+    
+    Updates:
+    - bot.last_checkin -> current timestamp
+    
+    This allows bots to maintain a heartbeat and signal they're alive/ready.
+    """
+    db: Session = SessionFactory()
+    
+    try:
+        # Parse message
+        text = event.message.text
+        json_str = text.replace('/checkin', '').strip()
+        data = json.loads(json_str)
+        
+        bot_id = data['bot_id']
+        timestamp = data.get('timestamp', datetime.now(UTC))
+        
+        # Convert ISO string to datetime if needed
+        if isinstance(timestamp, str):
+            timestamp = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+        
+        # Validate bot exists and is active
+        bot = db.query(models.Bot).filter_by(
+            bot_id=bot_id,
+            is_hidden=False
+        ).first()
+        
+        if not bot:
+            logger.warning(f"Check-in from unknown or inactive bot {bot_id}")
+            return
+        
+        # Update last_checkin
+        bot.last_checkin = datetime.now(UTC)  # type: ignore
+        db.commit()
+        
+        logger.debug(f"Check-in received from bot @{bot.tg_bot_username}")
+        
+    except json.JSONDecodeError as e:
+        logger.error(f"Invalid JSON in checkin command: {e}")
+    except KeyError as e:
+        logger.error(f"Missing required field in checkin: {e}")
+    except Exception as e:
+        logger.error(f"Error handling checkin: {e}", exc_info=True)
+        db.rollback()
+    finally:
+        db.close()
