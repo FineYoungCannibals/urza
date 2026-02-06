@@ -13,7 +13,7 @@ from croniter import croniter
 from urza.db.session import get_db
 from urza.db import models
 from urza.db.redis_client import push_task_to_queue
-from urza.api.schemas import schemas
+from urza.api import schemas
 from urza.api.auth import get_current_user, check_resource_access, can_see_hidden
 
 logger = logging.getLogger(__name__)
@@ -99,17 +99,17 @@ async def create_task(
     logger.info(f"User {current_user.username} created task {task_id}")
     
     return schemas.TaskResponse(
-        task_id=task.task_id,
-        name=task.name,
-        description=task.description,
-        created_at=task.created_at,
-        next_run=task.next_run,
-        last_run=task.last_run,
-        created_by_username=current_user.username,
-        config=task.config,
-        cron_schedule=task.cron_schedule,
-        timeout_seconds=task.timeout_seconds,
-        is_active=task.is_active
+        task_id=task.task_id, #type: ignore
+        name=task.name, #type: ignore
+        description=task.description, #type: ignore
+        created_at=task.created_at, #type: ignore
+        next_run=task.next_run, #type: ignore
+        last_run=task.last_run, #type: ignore
+        created_by_username=current_user.username, #type: ignore
+        config=task.config, #type: ignore
+        cron_schedule=task.cron_schedule, #type: ignore
+        timeout_seconds=task.timeout_seconds, #type: ignore
+        is_active=task.is_active #type: ignore
     )
 
 
@@ -136,17 +136,18 @@ async def list_tasks(
     if not current_user.role.admin:
         # Non-admins see only their own non-hidden tasks
         query = query.filter(
-            models.Task.created_by_id == current_user.user_id,
-            models.Task.is_hidden == False
+            models.Task.created_by_id == current_user.user_id
+        ).filter(
+            models.Task.is_hidden.is_(False)
         )
     elif not include_hidden or not can_see_hidden(current_user):
         # Admins without can_see_hidden or without include_hidden flag
-        query = query.filter(models.Task.is_hidden == False)
+        query = query.filter(models.Task.is_hidden.is_(False))
     # else: admin with can_see_hidden and include_hidden=true sees all
     
     # Apply active filter if provided
     if is_active is not None:
-        query = query.filter(models.Task.is_active == is_active)
+        query = query.filter(models.Task.is_active.is_(is_active))
     
     results = query.all()
     
@@ -282,7 +283,9 @@ async def delete_task(
     - Users can delete their own tasks
     - Admins can delete any task
     """
-    task = db.query(models.Task).filter_by(task_id=task_id).first()
+    task = db.query(models.Task).filter(
+        models.Task.task_id == task_id
+    ).first()
     
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
@@ -291,7 +294,7 @@ async def delete_task(
     check_resource_access(task.created_by_id, current_user, task.is_hidden)
     
     # Soft delete
-    task.is_hidden = True
+    task.is_hidden = True # type: ignore
     db.commit()
     
     logger.info(f"User {current_user.username} soft-deleted task {task_id}")
