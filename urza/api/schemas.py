@@ -125,7 +125,6 @@ class UserRole(BaseModel):
     name: str
     description: str
     admin: bool = False
-    can_create_hidden: bool = False
     can_see_hidden: bool = False
 
 # admins only obviously, this is the Role response
