@@ -27,7 +27,7 @@ def get_redis() -> redis.Redis:
         
         _redis_client = redis.Redis(
             host=settings.redis_host,
-            port=settings.redis_port,
+            port=settings.redis_port, # type: ignore
             db=settings.redis_db,
             password=settings.redis_password,
             username=settings.redis_user,
@@ -96,9 +96,9 @@ def pop_task_from_queue(queue_name: str = "tasks:pending", timeout: int = 0) -> 
     """
     try:
         redis_client = get_redis()
-        result = redis_client.brpop(queue_name, timeout=timeout)
+        result = redis_client.brpop(queue_name, timeout=timeout) # type: ignore
         if result:
-            _, execution_id = result
+            _, execution_id = result # type: ignore
             logger.debug(f"Popped execution {execution_id} from queue {queue_name}")
             return execution_id
         return None
@@ -119,7 +119,7 @@ def get_queue_length(queue_name: str = "tasks:pending") -> int:
     """
     try:
         redis_client = get_redis()
-        return redis_client.llen(queue_name)
+        return redis_client.llen(queue_name) # type: ignore
     except Exception as e:
         logger.error(f"Failed to get queue length for {queue_name}: {e}")
         return 0
