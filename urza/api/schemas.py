@@ -89,6 +89,7 @@ class TaskCreateRequest(BaseModel):
     notification_config_id: Optional[str] = None
     timeout_seconds: int = 3600
     cron_schedule: Optional[str] = None
+    run_now: bool = False 
 
 class TaskResponse(BaseModel):
     task_id: str
@@ -100,6 +101,7 @@ class TaskResponse(BaseModel):
     capability_id: str
     created_by_username: str # derived from user_id in Task 
     config: dict
+    run_now: bool
     cron_schedule: Optional[str] = None
     proof_of_work_required: bool = False
     timeout_seconds: int
@@ -110,7 +112,9 @@ class TaskExecution(BaseModel):
     task_id: str # FK task
     created_by_id: str # FK to the requesting user, captured from the request to create
     assigned_to: Optional[str] = None
-    started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    submitted_at: datetime = Field(default_factory=lambda: datetime.now(UTC)) # api will do this
+    queued_at: Optional[datetime]=None # api will do this
+    claimed_at: Optional[datetime]=None # Urzabot will do this
     completed_at: Optional[datetime] = None
     status: TaskStatus = TaskStatus.BROADCASTED
     proof_of_work_id: Optional[str] = None# FK proof of work
@@ -130,7 +134,9 @@ class TaskExecutionResponse(BaseModel):
     assigned_to: Optional[str] = None
     proof_of_work_id: Optional[str]  = None
     results: Optional[dict] = None
-    started_at: Optional[datetime] = None
+    submitted_at: Optional[datetime] = None
+    queued_at: Optional[datetime] = None
+    claimed_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
 
 # users dont use an endpoint that expects this as a request
