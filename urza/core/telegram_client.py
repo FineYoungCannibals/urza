@@ -249,7 +249,25 @@ class UrzaTGClient:
 
         print(f"Added {bot_username} as limited admin to channel.")
         return True
-
+        
+    async def send_channel_message(self, message: str, parse_mode: str = 'Markdown'):
+        """
+        Send a message to the configured channel.
+        
+        Args:
+            message: Text to send
+            parse_mode: 'Markdown' or 'HTML'
+        
+        Returns:
+            Message ID
+        """
+        await self.ensure_connected()
+        
+        channel = await self.client.get_entity(int(settings.tg_channel_id))
+        sent_message = await self.client.send_message(channel, message, parse_mode=parse_mode)
+        
+        logger.info(f"Sent message to channel {settings.tg_channel_id}: {sent_message.id}")
+        return sent_message.id
      
     # ==================== SYNC WRAPPERS ====================
     
