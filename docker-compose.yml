@@ -95,6 +95,14 @@ services:
       bash -c "
         uv run python -m urza.services.orchestrator.main
       "
+    
+  urza_publisher:
+    <<: [*common-base, *common-services, *common-build]
+    container_name: urza_publisher
+    command: >
+      bash -c "
+        uv run python -m urza.services.publisher.main
+      "
 
 volumes:
   mysql_data:
